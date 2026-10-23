@@ -2,10 +2,10 @@ import 'dart:async';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/domain/downloads.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/download/download_shutdown.dart';
-import 'package:asterlink/ui/download_shutdown_prompt.dart';
+import 'package:goujian_assistant/domain/downloads.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/download/download_shutdown.dart';
+import 'package:goujian_assistant/ui/download_shutdown_prompt.dart';
 
 DownloadTask _task(
   String id,

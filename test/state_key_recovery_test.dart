@@ -3,13 +3,13 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/core/crypto_box.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/backup.dart';
-import 'package:asterlink/data/startup_recovery.dart';
-import 'package:asterlink/data/state_key.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/domain/models.dart';
+import 'package:goujian_assistant/core/crypto_box.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/backup.dart';
+import 'package:goujian_assistant/data/startup_recovery.dart';
+import 'package:goujian_assistant/data/state_key.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/domain/models.dart';
 
 // Each facade represents a fresh process. Only the device's persisted records
 // are shared; different devices have independent maps and Android namespaces.

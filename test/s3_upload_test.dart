@@ -3,10 +3,10 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/http.dart';
-import 'package:asterlink/data/uploads/upload_io.dart';
-import 'package:asterlink/domain/uploads.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/http.dart';
+import 'package:goujian_assistant/data/uploads/upload_io.dart';
+import 'package:goujian_assistant/domain/uploads.dart';
 import 'support.dart';
 
 const _chunk = 8 * 1024 * 1024;

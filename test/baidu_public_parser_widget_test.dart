@@ -1,16 +1,16 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/app_services.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/domain/baidu_share_route.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/main.dart';
-import 'package:asterlink/ui/baidu_download_prompt.dart';
-import 'package:asterlink/ui/baidu_share_route_picker.dart';
-import 'package:asterlink/ui/browser_page.dart';
-import 'package:asterlink/ui/login_page.dart';
-import 'package:asterlink/ui/parse_page.dart';
+import 'package:goujian_assistant/app_services.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/domain/baidu_share_route.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/main.dart';
+import 'package:goujian_assistant/ui/baidu_download_prompt.dart';
+import 'package:goujian_assistant/ui/baidu_share_route_picker.dart';
+import 'package:goujian_assistant/ui/browser_page.dart';
+import 'package:goujian_assistant/ui/login_page.dart';
+import 'package:goujian_assistant/ui/parse_page.dart';
 import 'baidu_public_parser_support.dart';
 import 'support.dart';
 

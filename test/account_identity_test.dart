@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/domain/auth.dart';
-import 'package:asterlink/domain/models.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/domain/auth.dart';
+import 'package:goujian_assistant/domain/models.dart';
 
 Credential credential(
   String uid, {

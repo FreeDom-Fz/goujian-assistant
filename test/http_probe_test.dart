@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/data/http.dart';
+import 'package:goujian_assistant/data/http.dart';
 
 class _LocalIo extends HttpOverrides {}
 

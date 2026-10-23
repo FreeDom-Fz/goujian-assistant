@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/app_services.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/domain/downloads.dart';
-import 'package:asterlink/playback/torrent_playback.dart';
+import 'package:goujian_assistant/app_services.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/domain/downloads.dart';
+import 'package:goujian_assistant/playback/torrent_playback.dart';
 import 'support.dart';
 import 'player_support.dart';
 import 'torrent_test.dart' show testTorrent;

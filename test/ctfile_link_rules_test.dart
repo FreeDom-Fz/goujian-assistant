@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/domain/links.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/data/providers/ctfile.dart';
+import 'package:goujian_assistant/domain/links.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/data/providers/ctfile.dart';
 import 'support.dart';
 
 void main() {

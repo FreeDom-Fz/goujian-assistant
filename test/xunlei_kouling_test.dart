@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/data/http.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/domain/xunlei_kouling.dart';
+import 'package:goujian_assistant/data/http.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/domain/xunlei_kouling.dart';
 
 void main() {
   test('recognizes and normalizes Chinese Xunlei commands', () {

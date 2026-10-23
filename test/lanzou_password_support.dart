@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:asterlink/data/http.dart';
+import 'package:goujian_assistant/data/http.dart';
 import 'lanzou_support.dart';
 import 'support.dart';
 

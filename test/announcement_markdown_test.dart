@@ -7,12 +7,12 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/domain/announcement_markdown.dart';
-import 'package:asterlink/domain/announcements.dart';
-import 'package:asterlink/main.dart';
-import 'package:asterlink/ui/announcement_markdown.dart';
-import 'package:asterlink/ui/announcements_page.dart';
-import 'package:asterlink/ui/remote_control_dialogs.dart';
+import 'package:goujian_assistant/domain/announcement_markdown.dart';
+import 'package:goujian_assistant/domain/announcements.dart';
+import 'package:goujian_assistant/main.dart';
+import 'package:goujian_assistant/ui/announcement_markdown.dart';
+import 'package:goujian_assistant/ui/announcements_page.dart';
+import 'package:goujian_assistant/ui/remote_control_dialogs.dart';
 
 final richContent =
     '''

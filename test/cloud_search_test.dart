@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/cloud_search.dart';
-import 'package:asterlink/data/http.dart';
-import 'package:asterlink/data/http_retry.dart';
-import 'package:asterlink/domain/auth.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/domain/cloud_search_options.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/cloud_search.dart';
+import 'package:goujian_assistant/data/http.dart';
+import 'package:goujian_assistant/data/http_retry.dart';
+import 'package:goujian_assistant/domain/auth.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/domain/cloud_search_options.dart';
 import 'support.dart';
 
 const _session = BrowseSession(

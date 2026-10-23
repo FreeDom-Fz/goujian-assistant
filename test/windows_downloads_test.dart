@@ -2,14 +2,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
-import 'package:asterlink/app_services.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/domain/downloads.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/main.dart';
-import 'package:asterlink/platform/windows_actions.dart';
-import 'package:asterlink/ui/downloads_page.dart';
-import 'package:asterlink/ui/player_page.dart';
+import 'package:goujian_assistant/app_services.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/domain/downloads.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/main.dart';
+import 'package:goujian_assistant/platform/windows_actions.dart';
+import 'package:goujian_assistant/ui/downloads_page.dart';
+import 'package:goujian_assistant/ui/player_page.dart';
 import 'support.dart';
 
 void main() {

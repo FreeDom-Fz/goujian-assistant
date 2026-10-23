@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/download/transfer_http.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/download/transfer_http.dart';
 
 class _Network extends HttpOverrides {}
 

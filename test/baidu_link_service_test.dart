@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:asterlink/core/crypto_box.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/http.dart';
-import 'package:asterlink/data/providers/baidu_link_service.dart';
-import 'package:asterlink/domain/auth.dart';
+import 'package:goujian_assistant/core/crypto_box.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/http.dart';
+import 'package:goujian_assistant/data/providers/baidu_link_service.dart';
+import 'package:goujian_assistant/domain/auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pointycastle/export.dart';
 

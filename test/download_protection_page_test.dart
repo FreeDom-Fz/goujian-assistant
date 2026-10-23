@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/platform/download_protection.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/ui/download_protection_page.dart';
+import 'package:goujian_assistant/platform/download_protection.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/ui/download_protection_page.dart';
 
 class _Platform extends DownloadProtectionPlatform {
   final opened = <String>[];

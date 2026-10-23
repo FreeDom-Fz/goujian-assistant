@@ -2,15 +2,15 @@ import 'dart:io';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/app_services.dart';
-import 'package:asterlink/core/crypto_box.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/backup.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/domain/appearance.dart';
-import 'package:asterlink/domain/settings.dart';
-import 'package:asterlink/ui/app_theme.dart';
-import 'package:asterlink/ui/player_theme.dart';
+import 'package:goujian_assistant/app_services.dart';
+import 'package:goujian_assistant/core/crypto_box.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/backup.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/domain/appearance.dart';
+import 'package:goujian_assistant/domain/settings.dart';
+import 'package:goujian_assistant/ui/app_theme.dart';
+import 'package:goujian_assistant/ui/player_theme.dart';
 import 'support.dart';
 
 double contrast(Color a, Color b) {

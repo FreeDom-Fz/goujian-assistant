@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/domain/links.dart';
-import 'package:asterlink/domain/models.dart';
+import 'package:goujian_assistant/domain/links.dart';
+import 'package:goujian_assistant/domain/models.dart';
 
 void main() {
   const url = 'https://share.feijipan.com/s/Share123';

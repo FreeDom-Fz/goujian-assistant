@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/lan/lan_datagrams.dart';
-import 'package:asterlink/lan/lan_files.dart';
-import 'package:asterlink/lan/lan_models.dart';
-import 'package:asterlink/lan/lan_service.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/lan/lan_datagrams.dart';
+import 'package:goujian_assistant/lan/lan_files.dart';
+import 'package:goujian_assistant/lan/lan_models.dart';
+import 'package:goujian_assistant/lan/lan_service.dart';
 import 'support.dart';
 
 void main() {

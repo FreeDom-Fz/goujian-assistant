@@ -4,14 +4,14 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
-import 'package:asterlink/app_services.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/domain/downloads.dart';
-import 'package:asterlink/domain/torrent.dart';
-import 'package:asterlink/download/torrent_session.dart';
-import 'package:asterlink/platform/file_access.dart';
-import 'package:asterlink/platform/native_engine.dart';
+import 'package:goujian_assistant/app_services.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/domain/downloads.dart';
+import 'package:goujian_assistant/domain/torrent.dart';
+import 'package:goujian_assistant/download/torrent_session.dart';
+import 'package:goujian_assistant/platform/file_access.dart';
+import 'package:goujian_assistant/platform/native_engine.dart';
 import 'support.dart';
 
 class _LocalIo extends HttpOverrides {}

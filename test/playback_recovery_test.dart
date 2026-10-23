@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/domain/playback.dart';
-import 'package:asterlink/playback/playback_failure.dart';
+import 'package:goujian_assistant/domain/playback.dart';
+import 'package:goujian_assistant/playback/playback_failure.dart';
 import 'player_support.dart';
 import 'support.dart';
 

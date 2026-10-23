@@ -3,9 +3,9 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/http.dart';
-import 'package:asterlink/data/http_retry.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/http.dart';
+import 'package:goujian_assistant/data/http_retry.dart';
 import 'support.dart';
 
 class _FailureAdapter implements HttpClientAdapter {

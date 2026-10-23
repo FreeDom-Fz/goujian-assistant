@@ -3,8 +3,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/domain/uc_published_command.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/domain/uc_published_command.dart';
 
 void main(List<String> args) {
   const command = '執每日验证清茶生效';

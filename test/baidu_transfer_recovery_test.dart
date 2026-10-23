@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/download/baidu_transfer_recovery.dart';
+import 'package:goujian_assistant/download/baidu_transfer_recovery.dart';
 
 const mib = 1024 * 1024;
 

@@ -1,5 +1,5 @@
-import 'package:asterlink/domain/links.dart';
-import 'package:asterlink/domain/models.dart';
+import 'package:goujian_assistant/domain/links.dart';
+import 'package:goujian_assistant/domain/models.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 // Synthetic shares: expected results come from the supplied MoePal 4.3.0

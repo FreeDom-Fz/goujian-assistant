@@ -1,4 +1,4 @@
-import 'package:asterlink/core/json.dart';
+import 'package:goujian_assistant/core/json.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'lanzou_support.dart';
 

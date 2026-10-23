@@ -4,14 +4,14 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:pointycastle/asn1.dart';
 import 'package:pointycastle/export.dart';
-import 'package:asterlink/core/crypto_box.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/http.dart';
-import 'package:asterlink/data/providers/tianyi.dart';
-import 'package:asterlink/data/providers/tianyi_login.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/domain/auth.dart';
-import 'package:asterlink/domain/models.dart';
+import 'package:goujian_assistant/core/crypto_box.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/http.dart';
+import 'package:goujian_assistant/data/providers/tianyi.dart';
+import 'package:goujian_assistant/data/providers/tianyi_login.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/domain/auth.dart';
+import 'package:goujian_assistant/domain/models.dart';
 import 'support.dart';
 
 /// Generated in memory for each test process; never a real account/signing key.

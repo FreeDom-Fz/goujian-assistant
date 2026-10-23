@@ -1,4 +1,4 @@
-import 'package:asterlink/core/json.dart';
+import 'package:goujian_assistant/core/json.dart';
 
 const githubRepository = 'z7786/wenxi';
 

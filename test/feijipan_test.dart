@@ -1,15 +1,15 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/http.dart';
-import 'package:asterlink/data/providers/feijipan.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/domain/auth.dart';
-import 'package:asterlink/domain/links.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/domain/uploads.dart';
-import 'package:asterlink/domain/web_tokens.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/http.dart';
+import 'package:goujian_assistant/data/providers/feijipan.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/domain/auth.dart';
+import 'package:goujian_assistant/domain/links.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/domain/uploads.dart';
+import 'package:goujian_assistant/domain/web_tokens.dart';
 import 'support.dart';
 
 const _platform = CloudPlatform.feijipan;

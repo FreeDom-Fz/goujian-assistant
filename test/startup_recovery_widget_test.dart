@@ -4,10 +4,10 @@ import 'dart:typed_data';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/startup_recovery.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/main.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/startup_recovery.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/main.dart';
 
 class _Recovery extends StartupRecovery {
   _Recovery(super.failure);

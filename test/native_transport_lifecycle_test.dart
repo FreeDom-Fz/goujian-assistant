@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/platform/native_engine.dart';
+import 'package:goujian_assistant/platform/native_engine.dart';
 
 class _EarlyReplyProcess extends Fake implements Process {
   final output = StreamController<List<int>>();

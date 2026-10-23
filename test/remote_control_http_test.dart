@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/data/remote_control_http.dart';
-import 'package:asterlink/domain/remote_control.dart';
+import 'package:goujian_assistant/data/remote_control_http.dart';
+import 'package:goujian_assistant/domain/remote_control.dart';
 import 'remote_control_support.dart';
 
 class _Adapter implements HttpClientAdapter {

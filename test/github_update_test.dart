@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/github_update_service.dart';
-import 'package:asterlink/data/remote_control_http.dart';
-import 'package:asterlink/domain/github_update.dart';
-import 'package:asterlink/domain/remote_control.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/github_update_service.dart';
+import 'package:goujian_assistant/data/remote_control_http.dart';
+import 'package:goujian_assistant/domain/github_update.dart';
+import 'package:goujian_assistant/domain/remote_control.dart';
 import 'github_update_support.dart';
 import 'remote_control_support.dart';
 

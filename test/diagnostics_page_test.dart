@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:asterlink/diagnostics/app_log.dart';
-import 'package:asterlink/diagnostics/diagnostic_bundle.dart';
-import 'package:asterlink/main.dart';
-import 'package:asterlink/ui/diagnostics_page.dart';
+import 'package:goujian_assistant/diagnostics/app_log.dart';
+import 'package:goujian_assistant/diagnostics/diagnostic_bundle.dart';
+import 'package:goujian_assistant/main.dart';
+import 'package:goujian_assistant/ui/diagnostics_page.dart';
 
 class _UiBundle extends DiagnosticBundle {
   _UiBundle(super.log) : super(snapshot: () => {}, nativeEnabled: false);

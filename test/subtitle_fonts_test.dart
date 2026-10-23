@@ -4,8 +4,8 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
-import 'package:asterlink/playback/font_metadata.dart';
-import 'package:asterlink/playback/subtitle_fonts.dart';
+import 'package:goujian_assistant/playback/font_metadata.dart';
+import 'package:goujian_assistant/playback/subtitle_fonts.dart';
 import 'player_support.dart';
 
 class _RealHttp extends HttpOverrides {}

@@ -1,17 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/backup.dart';
-import 'package:asterlink/data/cleanup_outbox.dart';
-import 'package:asterlink/data/cloud_favorites.dart';
-import 'package:asterlink/data/cloud_repository.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/data/providers/pan123.dart';
-import 'package:asterlink/data/providers/xunlei_protocol.dart';
-import 'package:asterlink/domain/auth.dart';
-import 'package:asterlink/domain/downloads.dart';
-import 'package:asterlink/domain/models.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/backup.dart';
+import 'package:goujian_assistant/data/cleanup_outbox.dart';
+import 'package:goujian_assistant/data/cloud_favorites.dart';
+import 'package:goujian_assistant/data/cloud_repository.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/data/providers/pan123.dart';
+import 'package:goujian_assistant/data/providers/xunlei_protocol.dart';
+import 'package:goujian_assistant/domain/auth.dart';
+import 'package:goujian_assistant/domain/downloads.dart';
+import 'package:goujian_assistant/domain/models.dart';
 import 'support.dart';
 
 class AccountFixtureConnector extends CloudConnector {

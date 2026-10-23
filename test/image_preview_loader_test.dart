@@ -5,11 +5,11 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/http.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/download/image_preview_loader.dart';
-import 'package:asterlink/download/transfer_http.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/http.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/download/image_preview_loader.dart';
+import 'package:goujian_assistant/download/transfer_http.dart';
 
 const _mib = 1024 * 1024;
 const _etag = '"image-v1"';

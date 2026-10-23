@@ -2,10 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:path/path.dart' as p;
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/http.dart';
-import 'package:asterlink/platform/native_engine.dart';
-import 'package:asterlink/platform/file_access.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/http.dart';
+import 'package:goujian_assistant/platform/native_engine.dart';
+import 'package:goujian_assistant/platform/file_access.dart';
 
 String gopeedTestExecutable() => p.absolute(
   Platform.environment['ASTERLINK_GOPEED_TEST_EXE'] ??

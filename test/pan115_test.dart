@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/http.dart';
-import 'package:asterlink/data/providers/pan115.dart';
-import 'package:asterlink/data/providers/pan115_crypto.dart';
-import 'package:asterlink/domain/auth.dart';
-import 'package:asterlink/domain/links.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/domain/uploads.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/http.dart';
+import 'package:goujian_assistant/data/providers/pan115.dart';
+import 'package:goujian_assistant/data/providers/pan115_crypto.dart';
+import 'package:goujian_assistant/domain/auth.dart';
+import 'package:goujian_assistant/domain/links.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/domain/uploads.dart';
 import 'support.dart';
 
 final credential = Credential('115', {

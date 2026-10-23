@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/domain/account_login_info.dart';
-import 'package:asterlink/domain/models.dart';
+import 'package:goujian_assistant/domain/account_login_info.dart';
+import 'package:goujian_assistant/domain/models.dart';
 
 void main() {
   test(

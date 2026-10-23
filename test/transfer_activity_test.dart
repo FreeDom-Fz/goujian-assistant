@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/download/download_activity.dart';
-import 'package:asterlink/download/transfer_activity.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/download/download_activity.dart';
+import 'package:goujian_assistant/download/transfer_activity.dart';
 
 void main() {
   test(

@@ -1,12 +1,12 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/domain/downloads.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/domain/remote_control.dart';
-import 'package:asterlink/platform/app_update_installer.dart';
-import 'package:asterlink/platform/windows_actions.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/domain/downloads.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/domain/remote_control.dart';
+import 'package:goujian_assistant/platform/app_update_installer.dart';
+import 'package:goujian_assistant/platform/windows_actions.dart';
 
 void main() {
   late Directory directory;

@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/data/announcement_service.dart';
-import 'package:asterlink/data/remote_control_http.dart';
-import 'package:asterlink/data/state_store.dart';
+import 'package:goujian_assistant/data/announcement_service.dart';
+import 'package:goujian_assistant/data/remote_control_http.dart';
+import 'package:goujian_assistant/data/state_store.dart';
 import 'announcements_support.dart';
 import 'remote_control_support.dart';
 

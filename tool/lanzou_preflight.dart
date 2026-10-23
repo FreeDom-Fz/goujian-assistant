@@ -1,10 +1,10 @@
 // Explicit public-share probe; offline tests never access the cloud network.
 import 'dart:convert';
 import 'dart:io';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/http.dart';
-import 'package:asterlink/data/providers/lanzou.dart';
-import 'package:asterlink/domain/links.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/http.dart';
+import 'package:goujian_assistant/data/providers/lanzou.dart';
+import 'package:goujian_assistant/domain/links.dart';
 
 class _ObservedHttp extends JsonHttp {
   final transport = DioJsonHttp();

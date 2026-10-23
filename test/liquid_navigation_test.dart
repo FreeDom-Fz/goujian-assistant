@@ -1,5 +1,5 @@
-import 'package:asterlink/ui/app_navigation.dart';
-import 'package:asterlink/download/navigation_transfers.dart';
+import 'package:goujian_assistant/ui/app_navigation.dart';
+import 'package:goujian_assistant/download/navigation_transfers.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';

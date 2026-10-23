@@ -3,13 +3,13 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/http.dart';
-import 'package:asterlink/data/providers/pan123.dart';
-import 'package:asterlink/data/providers/tianyi.dart';
-import 'package:asterlink/data/providers/tianyi_captcha.dart';
-import 'package:asterlink/data/providers/tianyi_login.dart';
-import 'package:asterlink/data/state_store.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/http.dart';
+import 'package:goujian_assistant/data/providers/pan123.dart';
+import 'package:goujian_assistant/data/providers/tianyi.dart';
+import 'package:goujian_assistant/data/providers/tianyi_captcha.dart';
+import 'package:goujian_assistant/data/providers/tianyi_login.dart';
+import 'package:goujian_assistant/data/state_store.dart';
 
 class _PreflightComplete implements Exception {}
 

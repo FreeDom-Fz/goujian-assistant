@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:asterlink/platform/playback_device.dart';
-import 'package:asterlink/platform/windows_pip.dart';
+import 'package:goujian_assistant/platform/playback_device.dart';
+import 'package:goujian_assistant/platform/windows_pip.dart';
 
 class _Window {
   static const normal = Rect.fromLTWH(-1000, 120, 900, 650);

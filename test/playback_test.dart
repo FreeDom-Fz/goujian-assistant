@@ -3,12 +3,12 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:media_kit/media_kit.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/playback_store.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/domain/playback.dart';
-import 'package:asterlink/playback/subtitle_files.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/playback_store.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/domain/playback.dart';
+import 'package:goujian_assistant/playback/subtitle_files.dart';
 import 'player_support.dart';
 import 'support.dart';
 

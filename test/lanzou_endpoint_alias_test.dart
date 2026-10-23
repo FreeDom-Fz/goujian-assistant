@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/data/providers/lanzou_protocol.dart';
+import 'package:goujian_assistant/data/providers/lanzou_protocol.dart';
 import 'lanzou_support.dart';
 
 const aliasFrame = r'''<script>

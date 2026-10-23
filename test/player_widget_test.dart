@@ -7,17 +7,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/domain/playback.dart';
-import 'package:asterlink/core/operation_progress.dart';
-import 'package:asterlink/main.dart';
-import 'package:asterlink/ui/player_page.dart';
-import 'package:asterlink/ui/loading_indicator.dart';
-import 'package:asterlink/ui/player_theme.dart';
-import 'package:asterlink/platform/player_screenshot.dart';
-import 'package:asterlink/playback/playback_sleep_timer.dart';
-import 'package:asterlink/ui/subtitle_appearance.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/playback/external_stream.dart';
+import 'package:goujian_assistant/domain/playback.dart';
+import 'package:goujian_assistant/core/operation_progress.dart';
+import 'package:goujian_assistant/main.dart';
+import 'package:goujian_assistant/ui/player_page.dart';
+import 'package:goujian_assistant/ui/loading_indicator.dart';
+import 'package:goujian_assistant/ui/player_theme.dart';
+import 'package:goujian_assistant/platform/player_screenshot.dart';
+import 'package:goujian_assistant/playback/playback_sleep_timer.dart';
+import 'package:goujian_assistant/ui/subtitle_appearance.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/playback/external_stream.dart';
 import 'player_support.dart';
 
 class _FixtureExternalStream extends ExternalPlaybackStream {

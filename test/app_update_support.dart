@@ -1,16 +1,16 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:asterlink/data/app_update_service.dart';
-import 'package:asterlink/data/cleanup_outbox.dart';
-import 'package:asterlink/data/cloud_repository.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/domain/downloads.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/domain/remote_control.dart';
-import 'package:asterlink/download/download_manager.dart';
-import 'package:asterlink/platform/app_update_installer.dart';
-import 'package:asterlink/platform/windows_actions.dart';
+import 'package:goujian_assistant/data/app_update_service.dart';
+import 'package:goujian_assistant/data/cleanup_outbox.dart';
+import 'package:goujian_assistant/data/cloud_repository.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/domain/downloads.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/domain/remote_control.dart';
+import 'package:goujian_assistant/download/download_manager.dart';
+import 'package:goujian_assistant/platform/app_update_installer.dart';
+import 'package:goujian_assistant/platform/windows_actions.dart';
 import 'support.dart';
 
 class UpdateDownloads extends ChangeNotifier implements DownloadManager {

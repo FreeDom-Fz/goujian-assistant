@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/core/operation_progress.dart';
-import 'package:asterlink/ui/operation_progress_view.dart';
+import 'package:goujian_assistant/core/operation_progress.dart';
+import 'package:goujian_assistant/ui/operation_progress_view.dart';
 
 void main() {
   for (final compact in [false, true]) {

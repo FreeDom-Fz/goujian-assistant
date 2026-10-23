@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/domain/auth.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/domain/xunlei_web_login.dart';
+import 'package:goujian_assistant/domain/auth.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/domain/xunlei_web_login.dart';
 
 void main() {
   test(

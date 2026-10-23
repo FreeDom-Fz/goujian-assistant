@@ -2,8 +2,8 @@ import 'dart:io';
 import 'dart:math' as math;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:media_kit/media_kit.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/playback/external_stream.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/playback/external_stream.dart';
 import 'player_support.dart';
 import 'support.dart';
 

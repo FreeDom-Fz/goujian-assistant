@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/http.dart';
-import 'package:asterlink/data/providers/lanzou.dart';
-import 'package:asterlink/data/providers/lanzou_protocol.dart';
-import 'package:asterlink/domain/auth.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/domain/uploads.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/http.dart';
+import 'package:goujian_assistant/data/providers/lanzou.dart';
+import 'package:goujian_assistant/data/providers/lanzou_protocol.dart';
+import 'package:goujian_assistant/domain/auth.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/domain/uploads.dart';
 import 'support.dart';
 import 'lanzou_support.dart';
 

@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/app_services.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/main.dart';
-import 'package:asterlink/ui/clipboard_link_banner.dart';
-import 'package:asterlink/ui/parse_page.dart';
+import 'package:goujian_assistant/app_services.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/main.dart';
+import 'package:goujian_assistant/ui/clipboard_link_banner.dart';
+import 'package:goujian_assistant/ui/parse_page.dart';
 import 'support.dart';
 
 void main() {

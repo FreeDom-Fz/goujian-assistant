@@ -1,5 +1,5 @@
-import 'package:asterlink/data/providers/personal_cloud.dart';
-import 'package:asterlink/domain/cloud_file_time.dart';
+import 'package:goujian_assistant/data/providers/personal_cloud.dart';
+import 'package:goujian_assistant/domain/cloud_file_time.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

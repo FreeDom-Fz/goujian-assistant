@@ -1,12 +1,12 @@
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/domain/appearance.dart';
-import 'package:asterlink/domain/downloads.dart';
-import 'package:asterlink/download/download_overlay.dart';
-import 'package:asterlink/domain/uploads.dart';
-import 'package:asterlink/upload/upload_task.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/domain/appearance.dart';
+import 'package:goujian_assistant/domain/downloads.dart';
+import 'package:goujian_assistant/download/download_overlay.dart';
+import 'package:goujian_assistant/domain/uploads.dart';
+import 'package:goujian_assistant/upload/upload_task.dart';
 
 UploadTask uploadTask(
   String id, {

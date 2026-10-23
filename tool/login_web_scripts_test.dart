@@ -2,12 +2,12 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/domain/aliyun_web_password.dart';
-import 'package:asterlink/domain/auth.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/domain/weiyun_web_login.dart';
-import 'package:asterlink/domain/tianyi_web_login.dart';
-import 'package:asterlink/ui/login_webview.dart';
+import 'package:goujian_assistant/domain/aliyun_web_password.dart';
+import 'package:goujian_assistant/domain/auth.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/domain/weiyun_web_login.dart';
+import 'package:goujian_assistant/domain/tianyi_web_login.dart';
+import 'package:goujian_assistant/ui/login_webview.dart';
 
 void main() {
   test(

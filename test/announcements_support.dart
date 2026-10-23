@@ -1,4 +1,4 @@
-import 'package:asterlink/core/json.dart';
+import 'package:goujian_assistant/core/json.dart';
 
 const announcementsEndpoint = 'https://notices.example.test/announcements.json';
 final announcementsNow = DateTime.utc(2026, 10, 10, 6);

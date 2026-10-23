@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/data/playback_store.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/domain/downloads.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/domain/playback.dart';
-import 'package:asterlink/domain/playback_folder.dart';
-import 'package:asterlink/domain/playback_source.dart';
-import 'package:asterlink/playback/playlist_order.dart';
-import 'package:asterlink/playback/playback_sleep_timer.dart';
+import 'package:goujian_assistant/data/playback_store.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/domain/downloads.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/domain/playback.dart';
+import 'package:goujian_assistant/domain/playback_folder.dart';
+import 'package:goujian_assistant/domain/playback_source.dart';
+import 'package:goujian_assistant/playback/playlist_order.dart';
+import 'package:goujian_assistant/playback/playback_sleep_timer.dart';
 import 'player_support.dart';
 
 PlaybackEntry entry(String name, String folder) => PlaybackEntry(

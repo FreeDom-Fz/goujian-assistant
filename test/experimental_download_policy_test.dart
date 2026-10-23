@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/app_services.dart';
-import 'package:asterlink/data/http.dart';
-import 'package:asterlink/data/providers/cookie_cloud.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/domain/settings.dart';
+import 'package:goujian_assistant/app_services.dart';
+import 'package:goujian_assistant/data/http.dart';
+import 'package:goujian_assistant/data/providers/cookie_cloud.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/domain/settings.dart';
 import 'support.dart';
 
 void main() {

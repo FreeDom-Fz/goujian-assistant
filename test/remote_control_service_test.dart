@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/remote_control_service.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/domain/models.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/remote_control_service.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/domain/models.dart';
 import 'remote_control_support.dart';
 
 void main() {

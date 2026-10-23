@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/download/aliyun_transfer_recovery.dart';
+import 'package:goujian_assistant/download/aliyun_transfer_recovery.dart';
 
 void main() {
   bool observe(

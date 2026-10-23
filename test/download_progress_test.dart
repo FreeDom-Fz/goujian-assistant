@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/domain/downloads.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/ui/download_progress.dart';
-import 'package:asterlink/domain/uploads.dart';
-import 'package:asterlink/upload/upload_task.dart';
+import 'package:goujian_assistant/domain/downloads.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/ui/download_progress.dart';
+import 'package:goujian_assistant/domain/uploads.dart';
+import 'package:goujian_assistant/upload/upload_task.dart';
 import 'download_overlay_test.dart' show uploadTask;
 
 DownloadTask task({

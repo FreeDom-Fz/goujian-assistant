@@ -1,12 +1,12 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/app_services.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/backup.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/domain/settings.dart';
+import 'package:goujian_assistant/app_services.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/backup.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/domain/settings.dart';
 import 'support.dart';
 
 void main() {

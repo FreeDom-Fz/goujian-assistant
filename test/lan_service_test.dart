@@ -5,13 +5,13 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/http.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/lan/lan_files.dart';
-import 'package:asterlink/lan/lan_models.dart';
-import 'package:asterlink/lan/lan_qr.dart';
-import 'package:asterlink/lan/lan_service.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/http.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/lan/lan_files.dart';
+import 'package:goujian_assistant/lan/lan_models.dart';
+import 'package:goujian_assistant/lan/lan_qr.dart';
+import 'package:goujian_assistant/lan/lan_service.dart';
 import 'support.dart';
 
 class _LocalIo extends HttpOverrides {}

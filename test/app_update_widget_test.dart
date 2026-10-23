@@ -2,11 +2,11 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/data/remote_control_service.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/domain/remote_control.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/ui/remote_control_dialogs.dart';
+import 'package:goujian_assistant/data/remote_control_service.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/domain/remote_control.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/ui/remote_control_dialogs.dart';
 import 'app_update_support.dart';
 import 'remote_control_support.dart';
 

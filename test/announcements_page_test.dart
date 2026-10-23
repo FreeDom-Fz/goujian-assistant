@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/data/announcement_service.dart';
-import 'package:asterlink/data/remote_control_http.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/main.dart';
-import 'package:asterlink/ui/announcements_page.dart';
-import 'package:asterlink/ui/remote_control_dialogs.dart';
+import 'package:goujian_assistant/data/announcement_service.dart';
+import 'package:goujian_assistant/data/remote_control_http.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/main.dart';
+import 'package:goujian_assistant/ui/announcements_page.dart';
+import 'package:goujian_assistant/ui/remote_control_dialogs.dart';
 import 'announcements_support.dart';
 import 'remote_control_support.dart';
 

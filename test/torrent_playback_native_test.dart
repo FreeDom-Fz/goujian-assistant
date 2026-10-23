@@ -4,12 +4,12 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:media_kit/media_kit.dart';
-import 'package:asterlink/app_services.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/domain/playback.dart';
-import 'package:asterlink/domain/torrent.dart';
-import 'package:asterlink/platform/native_engine.dart';
-import 'package:asterlink/playback/torrent_playback.dart';
+import 'package:goujian_assistant/app_services.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/domain/playback.dart';
+import 'package:goujian_assistant/domain/torrent.dart';
+import 'package:goujian_assistant/platform/native_engine.dart';
+import 'package:goujian_assistant/playback/torrent_playback.dart';
 import 'support.dart';
 
 class _RealNetwork extends HttpOverrides {}

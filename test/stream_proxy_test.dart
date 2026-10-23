@@ -4,10 +4,10 @@ import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/domain/downloads.dart';
-import 'package:asterlink/playback/stream_proxy.dart';
-import 'package:asterlink/playback/playback_failure.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/domain/downloads.dart';
+import 'package:goujian_assistant/playback/stream_proxy.dart';
+import 'package:goujian_assistant/playback/playback_failure.dart';
 import 'support.dart';
 
 class _Origin {

@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/playback/external_stream.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/playback/external_stream.dart';
 import 'player_support.dart';
 
 void main() {

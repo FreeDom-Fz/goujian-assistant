@@ -2,10 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:media_kit/media_kit.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/playback_store.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/domain/playback.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/playback_store.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/domain/playback.dart';
 import 'player_support.dart';
 import 'support.dart';
 

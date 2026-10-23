@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/main.dart';
-import 'package:asterlink/ui/contact_author_dialog.dart';
+import 'package:goujian_assistant/main.dart';
+import 'package:goujian_assistant/ui/contact_author_dialog.dart';
 
 void main() {
   testWidgets('Contact dialog copies only the email and closes', (

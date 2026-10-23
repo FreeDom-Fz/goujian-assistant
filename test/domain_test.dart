@@ -1,16 +1,16 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/domain/auth.dart';
-import 'package:asterlink/domain/links.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/domain/settings.dart';
-import 'package:asterlink/domain/downloads.dart';
-import 'package:asterlink/download/hls.dart';
-import 'package:asterlink/download/space_budget.dart';
-import 'package:asterlink/platform/file_access.dart';
-import 'package:asterlink/data/providers/c139.dart';
-import 'package:asterlink/data/providers/pan123.dart';
-import 'package:asterlink/data/providers/xunlei_protocol.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/domain/auth.dart';
+import 'package:goujian_assistant/domain/links.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/domain/settings.dart';
+import 'package:goujian_assistant/domain/downloads.dart';
+import 'package:goujian_assistant/download/hls.dart';
+import 'package:goujian_assistant/download/space_budget.dart';
+import 'package:goujian_assistant/platform/file_access.dart';
+import 'package:goujian_assistant/data/providers/c139.dart';
+import 'package:goujian_assistant/data/providers/pan123.dart';
+import 'package:goujian_assistant/data/providers/xunlei_protocol.dart';
 
 void main() {
   test('All supported share formats recognize their own extraction codes', () {

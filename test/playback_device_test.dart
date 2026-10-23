@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/domain/playback.dart';
-import 'package:asterlink/platform/playback_device.dart';
+import 'package:goujian_assistant/domain/playback.dart';
+import 'package:goujian_assistant/platform/playback_device.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/main.dart';
-import 'package:asterlink/ui/common.dart';
+import 'package:goujian_assistant/main.dart';
+import 'package:goujian_assistant/ui/common.dart';
 import 'browser_test_support.dart';
 
 void main() {

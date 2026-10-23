@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/remote_control_http.dart';
-import 'package:asterlink/data/remote_control_service.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/remote_control_http.dart';
+import 'package:goujian_assistant/data/remote_control_service.dart';
 
 const controlEndpoint = 'https://config.example.test/control.json';
 final controlNow = DateTime(2026, 9, 19, 12);

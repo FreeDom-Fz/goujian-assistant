@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/ui/cloud_thumbnail.dart';
-import 'package:asterlink/ui/cloud_thumbnail_image.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/ui/cloud_thumbnail.dart';
+import 'package:goujian_assistant/ui/cloud_thumbnail_image.dart';
 
 class _Headers implements HttpHeaders {
   final values = <String, String>{};

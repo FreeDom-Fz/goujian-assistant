@@ -1,5 +1,5 @@
-import 'package:asterlink/platform/usage_metrics.dart';
-import 'package:asterlink/ui/analytics_privacy_page.dart';
+import 'package:goujian_assistant/platform/usage_metrics.dart';
+import 'package:goujian_assistant/ui/analytics_privacy_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -1,7 +1,7 @@
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/playback/playback_failure.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/playback/playback_failure.dart';
 import 'player_support.dart';
 
 void advance(FakeAsync time, PlaybackFixture fixture, int intervals) {

@@ -1,5 +1,5 @@
-import 'package:asterlink/domain/cloud_list_preferences.dart';
-import 'package:asterlink/domain/models.dart';
+import 'package:goujian_assistant/domain/cloud_list_preferences.dart';
+import 'package:goujian_assistant/domain/models.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:asterlink/domain/announcements.dart';
+import 'package:goujian_assistant/domain/announcements.dart';
 
 void main(List<String> args) {
   if (args.length > 1) {

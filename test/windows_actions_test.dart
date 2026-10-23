@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/platform/windows_actions.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/platform/windows_actions.dart';
 
 void main() {
   test(

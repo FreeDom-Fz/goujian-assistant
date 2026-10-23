@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/cleanup_outbox.dart';
-import 'package:asterlink/data/cloud_repository.dart';
-import 'package:asterlink/data/http.dart';
-import 'package:asterlink/data/providers/baidu.dart';
-import 'package:asterlink/data/providers/quark.dart';
-import 'package:asterlink/data/providers/uc.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/domain/models.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/cleanup_outbox.dart';
+import 'package:goujian_assistant/data/cloud_repository.dart';
+import 'package:goujian_assistant/data/http.dart';
+import 'package:goujian_assistant/data/providers/baidu.dart';
+import 'package:goujian_assistant/data/providers/quark.dart';
+import 'package:goujian_assistant/data/providers/uc.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/domain/models.dart';
 import 'lanzou_support.dart';
 import 'support.dart';
 

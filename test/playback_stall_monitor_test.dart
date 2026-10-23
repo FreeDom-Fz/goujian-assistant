@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/playback/playback_stall_monitor.dart';
+import 'package:goujian_assistant/playback/playback_stall_monitor.dart';
 
 void main() {
   late PlaybackStallMonitor monitor;

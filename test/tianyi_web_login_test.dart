@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/data/providers/tianyi.dart';
-import 'package:asterlink/domain/auth.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/domain/tianyi_web_login.dart';
+import 'package:goujian_assistant/data/providers/tianyi.dart';
+import 'package:goujian_assistant/domain/auth.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/domain/tianyi_web_login.dart';
 import 'support.dart';
 
 const _id = '0123456789abcdef0123456789abcdef';

@@ -3,16 +3,16 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/core/crypto_box.dart';
-import 'package:asterlink/data/backup.dart';
-import 'package:asterlink/data/legacy_import.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/domain/auth.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/domain/settings.dart';
-import 'package:asterlink/data/providers/xunlei.dart';
-import 'package:asterlink/data/providers/xunlei_protocol.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/core/crypto_box.dart';
+import 'package:goujian_assistant/data/backup.dart';
+import 'package:goujian_assistant/data/legacy_import.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/domain/auth.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/domain/settings.dart';
+import 'package:goujian_assistant/data/providers/xunlei.dart';
+import 'package:goujian_assistant/data/providers/xunlei_protocol.dart';
 import 'support.dart';
 
 void main() {

@@ -6,10 +6,10 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/diagnostics/app_log.dart';
-import 'package:asterlink/diagnostics/diagnostic_bundle.dart';
-import 'package:asterlink/diagnostics/diagnostic_runtime.dart';
-import 'package:asterlink/diagnostics/redaction.dart';
+import 'package:goujian_assistant/diagnostics/app_log.dart';
+import 'package:goujian_assistant/diagnostics/diagnostic_bundle.dart';
+import 'package:goujian_assistant/diagnostics/diagnostic_runtime.dart';
+import 'package:goujian_assistant/diagnostics/redaction.dart';
 
 void main() {
   test(
@@ -87,7 +87,7 @@ void main() {
       final stack = List.generate(
         150,
         (i) =>
-            '#$i DownloadManager.transfer (package:asterlink/download.dart:$i)',
+            '#$i DownloadManager.transfer (package:goujian_assistant/download.dart:$i)',
       ).join('\n');
       final clean =
           jsonDecode(
@@ -144,7 +144,7 @@ void main() {
         level: 'fatal',
         error: StateError('Cookie: private-value'),
         stack: StackTrace.fromString(
-          '#0 remove (package:asterlink/remove.dart:8)',
+          '#0 remove (package:goujian_assistant/remove.dart:8)',
         ),
       );
       final resumed = DiagnosticLog.open(directory);

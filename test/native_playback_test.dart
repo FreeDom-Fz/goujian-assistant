@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:media_kit/media_kit.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/domain/playback.dart';
-import 'package:asterlink/diagnostics/app_log.dart';
-import 'package:asterlink/playback/media_backend.dart';
-import 'package:asterlink/playback/playback_failure.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/domain/playback.dart';
+import 'package:goujian_assistant/diagnostics/app_log.dart';
+import 'package:goujian_assistant/playback/media_backend.dart';
+import 'package:goujian_assistant/playback/playback_failure.dart';
 import 'support.dart';
 
 class _RealHttp extends HttpOverrides {}

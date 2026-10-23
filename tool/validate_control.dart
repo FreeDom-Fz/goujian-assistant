@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:asterlink/data/remote_control_http.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/domain/remote_control.dart';
+import 'package:goujian_assistant/data/remote_control_http.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/domain/remote_control.dart';
 
 Future<void> main(List<String> args) async {
   String path = 'control.json';

@@ -3,15 +3,15 @@ import 'dart:io';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/data/cloud_repository.dart';
-import 'package:asterlink/data/cleanup_outbox.dart';
-import 'package:asterlink/data/http.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/domain/uploads.dart';
-import 'package:asterlink/upload/upload_manager.dart';
-import 'package:asterlink/upload/upload_task.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/data/cloud_repository.dart';
+import 'package:goujian_assistant/data/cleanup_outbox.dart';
+import 'package:goujian_assistant/data/http.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/domain/uploads.dart';
+import 'package:goujian_assistant/upload/upload_manager.dart';
+import 'package:goujian_assistant/upload/upload_task.dart';
 import 'support.dart';
 
 class QueueConnector extends CloudConnector {

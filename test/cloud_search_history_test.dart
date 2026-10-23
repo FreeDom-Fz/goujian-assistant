@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/cloud_search_history.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/domain/cloud_search_options.dart';
-import 'package:asterlink/domain/models.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/cloud_search_history.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/domain/cloud_search_options.dart';
+import 'package:goujian_assistant/domain/models.dart';
 
 BrowseSession _session(
   String account, [

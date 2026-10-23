@@ -3,12 +3,12 @@ import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/core/crypto_box.dart';
-import 'package:asterlink/data/backup.dart';
-import 'package:asterlink/data/startup_recovery.dart';
-import 'package:asterlink/data/state_key.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/diagnostics/app_log.dart';
+import 'package:goujian_assistant/core/crypto_box.dart';
+import 'package:goujian_assistant/data/backup.dart';
+import 'package:goujian_assistant/data/startup_recovery.dart';
+import 'package:goujian_assistant/data/state_key.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/diagnostics/app_log.dart';
 
 class _LegacyStorage extends FlutterSecureStorage {
   bool broken = false;

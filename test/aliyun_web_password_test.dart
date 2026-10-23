@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/domain/aliyun_web_password.dart';
+import 'package:goujian_assistant/domain/aliyun_web_password.dart';
 
 void main() {
   test(

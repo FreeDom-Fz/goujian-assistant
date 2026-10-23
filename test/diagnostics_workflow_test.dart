@@ -3,11 +3,11 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:archive/archive.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/diagnostics/app_log.dart';
-import 'package:asterlink/diagnostics/diagnostic_bundle.dart';
-import 'package:asterlink/diagnostics/diagnostic_share.dart';
-import 'package:asterlink/diagnostics/web_login_diagnostics.dart';
-import 'package:asterlink/domain/models.dart';
+import 'package:goujian_assistant/diagnostics/app_log.dart';
+import 'package:goujian_assistant/diagnostics/diagnostic_bundle.dart';
+import 'package:goujian_assistant/diagnostics/diagnostic_share.dart';
+import 'package:goujian_assistant/diagnostics/web_login_diagnostics.dart';
+import 'package:goujian_assistant/domain/models.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

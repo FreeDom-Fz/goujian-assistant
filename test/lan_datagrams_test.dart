@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/lan/lan_datagrams.dart';
+import 'package:goujian_assistant/lan/lan_datagrams.dart';
 
 class _BusyDatagramSocket extends Fake implements RawDatagramSocket {
   bool blocked = true;

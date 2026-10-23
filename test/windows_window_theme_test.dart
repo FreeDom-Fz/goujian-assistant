@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/platform/windows_window_theme.dart';
+import 'package:goujian_assistant/platform/windows_window_theme.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

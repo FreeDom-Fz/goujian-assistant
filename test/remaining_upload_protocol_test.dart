@@ -2,14 +2,14 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/data/http.dart';
-import 'package:asterlink/data/providers/baidu.dart';
-import 'package:asterlink/data/providers/xunlei.dart';
-import 'package:asterlink/data/providers/xunlei_protocol.dart';
-import 'package:asterlink/data/state_store.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/domain/uploads.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/data/http.dart';
+import 'package:goujian_assistant/data/providers/baidu.dart';
+import 'package:goujian_assistant/data/providers/xunlei.dart';
+import 'package:goujian_assistant/data/providers/xunlei_protocol.dart';
+import 'package:goujian_assistant/data/state_store.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/domain/uploads.dart';
 import 'support.dart';
 
 UploadFile _source(Uint8List bytes) => UploadFile(

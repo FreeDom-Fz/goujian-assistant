@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:media_kit/media_kit.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/playback/media_backend.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/playback/media_backend.dart';
 import 'support.dart';
 
 void main() {

@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:asterlink/core/json.dart';
-import 'package:asterlink/domain/models.dart';
-import 'package:asterlink/main.dart';
-import 'package:asterlink/ui/cloud_accounts_page.dart';
-import 'package:asterlink/ui/cloud_favorites_page.dart';
-import 'package:asterlink/ui/native_password_login_page.dart';
+import 'package:goujian_assistant/core/json.dart';
+import 'package:goujian_assistant/domain/models.dart';
+import 'package:goujian_assistant/main.dart';
+import 'package:goujian_assistant/ui/cloud_accounts_page.dart';
+import 'package:goujian_assistant/ui/cloud_favorites_page.dart';
+import 'package:goujian_assistant/ui/native_password_login_page.dart';
 import 'browser_test_support.dart';
 import 'cloud_accounts_favorites_test.dart' show addFixtureAccount;
 
