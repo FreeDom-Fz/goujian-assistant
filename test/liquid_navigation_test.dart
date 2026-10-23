@@ -1,5 +1,4 @@
 import 'package:goujian_assistant/ui/app_navigation.dart';
-import 'package:goujian_assistant/download/navigation_transfers.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +10,6 @@ void main() {
     bool rtl = false,
     double scale = 1,
     bool reduceMotion = true,
-    ValueNotifier<NavigationTransferStatus>? transfers,
   }) async {
     await tester.binding.setSurfaceSize(const Size(320, 640));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -30,7 +28,6 @@ void main() {
                 body: Text('page-$selected'),
                 bottomNavigationBar: AppNavigation(
                   selectedIndex: selected,
-                  transfers: transfers,
                   onSelected: (index) => setState(() => selected = index),
                 ),
               ),
@@ -49,43 +46,43 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('navigation-1')));
     await tester.pumpAndSettle();
     expect(find.text('page-1'), findsOneWidget);
-    final start = tester.getCenter(find.byKey(const ValueKey('navigation-1')));
-    final end = tester.getCenter(find.byKey(const ValueKey('navigation-3')));
+    final start = tester.getCenter(find.byKey(const ValueKey('navigation-0')));
+    final end = tester.getCenter(find.byKey(const ValueKey('navigation-1')));
     var gesture = await tester.startGesture(start);
     await gesture.moveTo(end);
     await tester.pump();
     expect(find.text('page-1'), findsOneWidget);
     await gesture.up();
     await tester.pumpAndSettle();
-    expect(find.text('page-3'), findsOneWidget);
+    expect(find.text('page-1'), findsOneWidget);
     gesture = await tester.startGesture(end);
     await gesture.moveTo(start);
     await tester.pump();
     await gesture.cancel();
     await tester.pumpAndSettle();
-    expect(find.text('page-3'), findsOneWidget);
+    expect(find.text('page-1'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
   testWidgets('RTL drag and large text fit a narrow screen', (tester) async {
     await render(tester, rtl: true, scale: 2);
     final start = tester.getCenter(find.byKey(const ValueKey('navigation-0')));
-    final end = tester.getCenter(find.byKey(const ValueKey('navigation-3')));
+    final end = tester.getCenter(find.byKey(const ValueKey('navigation-1')));
     await tester.dragFrom(start, end - start);
     await tester.pumpAndSettle();
-    expect(find.text('page-3'), findsOneWidget);
+    expect(find.text('page-1'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
   testWidgets('animated selection settles on the requested tab', (
     tester,
   ) async {
     await render(tester, reduceMotion: false);
-    await tester.tap(find.byKey(const ValueKey('navigation-3')));
+    await tester.tap(find.byKey(const ValueKey('navigation-1')));
     await tester.pumpAndSettle();
     final lens = tester.getCenter(find.byKey(const Key('navigation-lens')));
-    final tab = tester.getCenter(find.byKey(const ValueKey('navigation-3')));
+    final tab = tester.getCenter(find.byKey(const ValueKey('navigation-1')));
     expect(lens.dx, closeTo(tab.dx, 1));
-    expect(find.text('page-3'), findsOneWidget);
+    expect(find.text('page-1'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -94,7 +91,7 @@ void main() {
     (tester) async {
       await render(tester, reduceMotion: false);
       final target = tester.getCenter(
-        find.byKey(const ValueKey('navigation-2')),
+        find.byKey(const ValueKey('navigation-1')),
       );
       final gesture = await tester.startGesture(target);
       await tester.pump(const Duration(milliseconds: 100));
@@ -129,7 +126,7 @@ void main() {
       await mouse.addPointer(location: Offset.zero);
       addTearDown(mouse.removePointer);
       await mouse.moveTo(
-        tester.getCenter(find.byKey(const ValueKey('navigation-3'))),
+        tester.getCenter(find.byKey(const ValueKey('navigation-1'))),
       );
       await tester.pumpAndSettle();
       expect(find.text('page-0'), findsOneWidget);
@@ -138,60 +135,6 @@ void main() {
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
       await tester.pumpAndSettle();
       expect(find.text('page-1'), findsOneWidget);
-      expect(tester.takeException(), isNull);
-    },
-  );
-
-  testWidgets(
-    'transfer badge follows both queues and completion only appears once',
-    (tester) async {
-      final transfers = ValueNotifier(
-        const NavigationTransferStatus(completion: 7),
-      );
-      addTearDown(transfers.dispose);
-      await render(tester, transfers: transfers, scale: 2);
-      expect(
-        find.byKey(const Key('navigation-transfer-complete')),
-        findsNothing,
-      );
-      transfers.value = const NavigationTransferStatus(
-        downloads: 1,
-        uploads: 2,
-        progress: 42,
-        completion: 7,
-      );
-      await tester.pumpAndSettle();
-      expect(find.text('3'), findsOneWidget);
-      expect(
-        find.byKey(const Key('navigation-transfer-progress')),
-        findsOneWidget,
-      );
-      transfers.value = const NavigationTransferStatus(completion: 8);
-      await tester.pump();
-      expect(
-        find.byKey(const Key('navigation-transfer-complete')),
-        findsOneWidget,
-      );
-      await tester.pump(const Duration(milliseconds: 1400));
-      await tester.pumpAndSettle();
-      expect(
-        find.byKey(const Key('navigation-transfer-complete')),
-        findsNothing,
-      );
-      expect(find.byKey(const Key('navigation-transfer-count')), findsNothing);
-      await tester.tap(find.byKey(const ValueKey('navigation-3')));
-      await tester.pumpAndSettle();
-      expect(
-        find.byKey(const Key('navigation-transfer-complete')),
-        findsNothing,
-      );
-      transfers.value = const NavigationTransferStatus(
-        uploads: 1,
-        completion: 8,
-      );
-      await tester.pumpAndSettle();
-      expect(find.text('1'), findsOneWidget);
-      expect(tester.binding.hasScheduledFrame, isFalse);
       expect(tester.takeException(), isNull);
     },
   );

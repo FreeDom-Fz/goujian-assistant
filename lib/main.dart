@@ -19,17 +19,13 @@ import 'ui/remote_control_dialogs.dart';
 import 'ui/app_popup_menu.dart';
 import 'ui/cloud_page.dart';
 import 'ui/cloud_accounts_page.dart';
-import 'ui/clipboard_link_banner.dart';
 import 'ui/common.dart';
 import 'ui/app_theme.dart';
 import 'ui/app_background.dart';
 export 'ui/app_theme.dart' show appTheme;
 import 'ui/startup_loading_page.dart';
-import 'ui/transfers_page.dart';
+import 'ui/parse_page.dart' show directDownloadDialog;
 import 'ui/mine_page.dart';
-import 'ui/parse_page.dart';
-import 'ui/announcements_page.dart';
-import 'ui/device_link_page.dart';
 import 'ui/donate_page.dart';
 import 'ui/about_dialog.dart';
 import 'ui/download_shutdown_prompt.dart';
@@ -64,7 +60,7 @@ Future<void> main() async {
       unawaited(
         windowManager.waitUntilReadyToShow(
           const WindowOptions(
-            title: '文析助手',
+            title: '购件助手',
             size: Size(1100, 780),
             minimumSize: appWindowMinimumSize,
             center: true,
@@ -210,21 +206,13 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell>
     with WindowListener, TrayListener, WidgetsBindingObserver {
   late int selected = widget.initialTab;
-  final parseKey = GlobalKey<ParsePageState>();
   bool trayReady = false, closing = false;
   bool _openingExternal = false, _externalScheduled = false;
-  bool _openingLan = false;
-  static const titles = ['分享解析', '网盘列表', '传输管理', '我的'];
+  static const titles = ['物流', '我的'];
   @override
   void initState() {
     super.initState();
-    widget.services.sharedText.addListener(_shared);
-    if (widget.services.downloadNavigation.value > 0) selected = 2;
-    widget.services.downloadNavigation.addListener(_showDownloads);
-    widget.services.lanNavigation.addListener(_showLan);
-    widget.services.transferTab.addListener(_transferTabChanged);
     widget.services.externalOpens.addListener(_externalAvailable);
-    widget.services.clipboard.addListener(_clipboardChanged);
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
@@ -242,7 +230,6 @@ class _MainShellState extends State<MainShell>
         widget.services.refreshPublicDownloadPassword();
       }
       _externalAvailable();
-      if (widget.services.lanNavigation.value > 0) _showLan();
     });
     if (Platform.isWindows && widget.services.platformFeatures) {
       windowManager.addListener(this);
@@ -252,10 +239,6 @@ class _MainShellState extends State<MainShell>
   }
 
   void _clipboardChanged() {
-    if (mounted) setState(() {});
-  }
-
-  void _transferTabChanged() {
     if (mounted) setState(() {});
   }
 
@@ -378,65 +361,16 @@ class _MainShellState extends State<MainShell>
     widget.services.announcements.setForeground(false);
   }
 
-  void _useClipboard() {
-    final suggestion = widget.services.clipboard.suggestion;
-    if (suggestion == null) return;
-    setState(() => selected = 0);
-    parseKey.currentState?.acceptClipboard(suggestion.text);
-    unawaited(widget.services.clipboard.acknowledge(suggestion));
-  }
-
-  void _shared() {
-    if (mounted && widget.services.sharedText.value?.isNotEmpty == true) {
-      setState(() => selected = 0);
-    }
-  }
-
-  void _showDownloads() {
-    if (!mounted) return;
-    Navigator.of(context).popUntil((route) => route.isFirst);
-    setState(() => selected = 2);
-    DiagnosticLog.event('ui.tab', fields: {'tab': 'downloads'});
-  }
-
-  void _showLan() => unawaited(_openLan());
-
-  Future<void> _openLan() async {
-    if (!mounted || _openingLan) return;
-    _openingLan = true;
-    try {
-      final text = await Navigator.push<String>(
-        context,
-        MaterialPageRoute(
-          builder: (_) => DeviceLinkPage(
-            widget.services,
-            initialText: parseKey.currentState?.input.text ?? '',
-          ),
-        ),
-      );
-      if (!mounted || text == null || text.isEmpty) return;
-      setState(() => selected = 0);
-      await WidgetsBinding.instance.endOfFrame;
-      if (!mounted) return;
-      final parser = parseKey.currentState;
-      parser?.acceptClipboard(text);
-      await parser?.parse();
-    } finally {
-      _openingLan = false;
-    }
-  }
-
   Future<void> _desktop() async {
     try {
       await windowManager.setPreventClose(true);
       await trayManager.setIcon('assets/icons/app.ico');
-      await trayManager.setToolTip('文析助手');
+      await trayManager.setToolTip('购件助手');
       await trayManager.setContextMenu(
         Menu(
           items: [
-            MenuItem(key: 'show', label: '打开文析助手'),
+            MenuItem(key: 'show', label: '打开购件助手'),
             MenuItem.separator(),
-            MenuItem(key: 'pause', label: '停止全部传输'),
             MenuItem(key: 'exit', label: '退出'),
           ],
         ),
@@ -461,9 +395,6 @@ class _MainShellState extends State<MainShell>
   @override
   void onTrayMenuItemClick(MenuItem item) {
     if (item.key == 'show') onTrayIconMouseDown();
-    if (item.key == 'pause') {
-      busy(context, widget.services.stopTransfers, label: '停止传输…');
-    }
     if (item.key == 'exit') _close(forceExit: true);
   }
 
@@ -530,10 +461,6 @@ class _MainShellState extends State<MainShell>
 
   @override
   void dispose() {
-    widget.services.sharedText.removeListener(_shared);
-    widget.services.downloadNavigation.removeListener(_showDownloads);
-    widget.services.lanNavigation.removeListener(_showLan);
-    widget.services.transferTab.removeListener(_transferTabChanged);
     widget.services.externalOpens.removeListener(_externalAvailable);
     WidgetsBinding.instance.removeObserver(this);
     widget.services.clipboard.removeListener(_clipboardChanged);
@@ -601,7 +528,7 @@ class _MainShellState extends State<MainShell>
   }
 
   List<AppMenuAction<String>> get menu => switch (selected) {
-    1 => const [
+    0 => const [
       AppMenuAction(
         value: 'cloud-layout',
         label: '排序与隐藏',
@@ -618,41 +545,11 @@ class _MainShellState extends State<MainShell>
         icon: CupertinoIcons.arrow_clockwise,
       ),
     ],
-    2 when widget.services.transferTab.value == 1 => const [
-      AppMenuAction(
-        value: 'stop-uploads',
-        label: '停止全部上传',
-        icon: CupertinoIcons.stop,
-      ),
-      AppMenuAction(
-        value: 'clear-uploads',
-        label: '清理完成记录',
-        icon: CupertinoIcons.trash,
-      ),
-    ],
-    2 => const [
-      AppMenuAction(
-        value: 'new',
-        label: '新建下载',
-        icon: CupertinoIcons.plus_circle,
-      ),
-      AppMenuAction(value: 'pause', label: '全部暂停', icon: CupertinoIcons.pause),
-      AppMenuAction(
-        value: 'resume',
-        label: '继续未完成任务',
-        icon: CupertinoIcons.play,
-      ),
-      AppMenuAction(
-        value: 'clear',
-        label: '清理完成记录',
-        icon: CupertinoIcons.trash,
-      ),
-    ],
     _ => const [
       AppMenuAction(value: 'donate', label: '打赏作者', icon: CupertinoIcons.gift),
       AppMenuAction(
         value: 'about',
-        label: '关于文析助手',
+        label: '关于购件助手',
         icon: CupertinoIcons.info_circle,
       ),
     ],
@@ -660,13 +557,12 @@ class _MainShellState extends State<MainShell>
   Widget _navigation(BuildContext context, {required bool rail}) =>
       AppNavigation(
         selectedIndex: selected,
-        transfers: widget.services.navigationTransfers,
         rail: rail,
         onSelected: (index) {
           DiagnosticLog.event(
             'ui.tab',
             fields: {
-              'tab': ['parse', 'cloud', 'downloads', 'mine'][index],
+              'tab': ['logistics', 'mine'][index],
             },
           );
           setState(() => selected = index);
@@ -676,21 +572,15 @@ class _MainShellState extends State<MainShell>
   @override
   Widget build(BuildContext context) => CallbackShortcuts(
     bindings: {
-      for (var i = 0; i < 4; i++)
+      for (var i = 0; i < 2; i++)
         SingleActivator(
           [
             LogicalKeyboardKey.digit1,
             LogicalKeyboardKey.digit2,
-            LogicalKeyboardKey.digit3,
-            LogicalKeyboardKey.digit4,
           ][i],
           control: true,
         ): () =>
             setState(() => selected = i),
-      const SingleActivator(LogicalKeyboardKey.keyL, control: true): () {
-        setState(() => selected = 0);
-        parseKey.currentState?.focusInput();
-      },
     },
     child: Focus(
       autofocus: true,
@@ -703,7 +593,7 @@ class _MainShellState extends State<MainShell>
               builder: (context) {
                 final rail = constraints.maxWidth >= 820;
                 final desktopHeader =
-                    (selected == 0 || selected == 3) &&
+                    (selected == 0 || selected == 1) &&
                     Theme.of(context).platform == TargetPlatform.windows;
                 final content = Scaffold(
                   extendBody: !rail,
@@ -719,36 +609,14 @@ class _MainShellState extends State<MainShell>
                     titleSpacing: desktopHeader ? 28 : null,
                     toolbarHeight: desktopHeader ? 52 : null,
                     actions: [
-                      if (selected == 0)
-                        AnimatedBuilder(
-                          animation: widget.services.lan,
-                          builder: (context, _) => Tooltip(
-                            message: '设备互联',
-                            child: TextButton.icon(
-                              key: const Key('parse-device-link'),
-                              onPressed: _showLan,
-                              icon: Badge.count(
-                                count: widget.services.lan.unread,
-                                isLabelVisible: widget.services.lan.unread > 0,
-                                child: const Icon(
-                                  Icons.devices_rounded,
-                                  size: 21,
-                                ),
-                              ),
-                              label: const Text('互联'),
-                            ),
-                          ),
-                        ),
                       Padding(
                         padding: const EdgeInsets.only(right: 8),
-                        child: selected == 0
-                            ? AnnouncementButton(widget.services.announcements)
-                            : AppPopupMenuButton<String>(
-                                tooltip: '更多操作',
-                                onSelected: _menu,
-                                actions: menu,
-                                icon: CupertinoIcons.ellipsis,
-                              ),
+                        child: AppPopupMenuButton<String>(
+                          tooltip: '更多操作',
+                          onSelected: _menu,
+                          actions: menu,
+                          icon: CupertinoIcons.ellipsis,
+                        ),
                       ),
                     ],
                   ),
@@ -776,43 +644,11 @@ class _MainShellState extends State<MainShell>
                                     }
                                   : null,
                             ),
-                            if (widget.services.clipboard.suggestion
-                                case final suggestion?)
-                              ClipboardLinkBanner(
-                                suggestion: suggestion,
-                                onUse: _useClipboard,
-                                onDismiss: () => unawaited(
-                                  widget.services.clipboard.acknowledge(
-                                    suggestion,
-                                  ),
-                                ),
-                              ),
                             Expanded(
                               child: IndexedStack(
                                 index: selected,
                                 children: [
-                                  ParsePage(
-                                    widget.services,
-                                    key: parseKey,
-                                    active: selected == 0,
-                                  ),
-                                  CloudPage(
-                                    widget.services,
-                                    onParseShare: () {
-                                      setState(() => selected = 0);
-                                      WidgetsBinding.instance
-                                          .addPostFrameCallback((_) {
-                                            if (mounted && selected == 0) {
-                                              parseKey.currentState?.focus
-                                                  .requestFocus();
-                                            }
-                                          });
-                                    },
-                                  ),
-                                  TransfersPage(
-                                    widget.services,
-                                    active: selected == 2,
-                                  ),
+                                  CloudPage(widget.services),
                                   MinePage(widget.services),
                                 ],
                               ),

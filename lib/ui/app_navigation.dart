@@ -1,7 +1,4 @@
 import 'liquid_bottom_navigation.dart';
-import 'navigation_transfer_icon.dart';
-import '../download/navigation_transfers.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'common.dart';
@@ -12,18 +9,14 @@ class AppNavigation extends StatelessWidget {
     required this.selectedIndex,
     required this.onSelected,
     this.rail = false,
-    this.transfers,
   });
 
   final int selectedIndex;
   final ValueChanged<int> onSelected;
   final bool rail;
-  final ValueListenable<NavigationTransferStatus>? transfers;
 
   static const destinations = [
-    ('解析', 'assets/navigation/parse.svg'),
-    ('网盘', 'assets/navigation/cloud.svg'),
-    ('传输', 'assets/navigation/downloads.svg'),
+    ('物流', 'assets/navigation/cloud.svg'),
     ('我的', 'assets/navigation/settings.svg'),
   ];
 
@@ -61,21 +54,13 @@ class AppNavigation extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  if (index == 2)
-                    NavigationTransferIcon(
-                      asset: asset,
-                      color: color,
-                      size: 26,
-                      transfers: transfers,
-                    )
-                  else
-                    SvgPicture.asset(
-                      asset,
-                      width: 26,
-                      height: 26,
-                      colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
-                      excludeFromSemantics: true,
-                    ),
+                  SvgPicture.asset(
+                    asset,
+                    width: 26,
+                    height: 26,
+                    colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+                    excludeFromSemantics: true,
+                  ),
                   const SizedBox(height: 4),
                   ExcludeSemantics(
                     child: Text(
@@ -128,7 +113,7 @@ class AppNavigation extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.only(bottom: compact ? 10 : 18),
                 child: Text(
-                  '文析助手',
+                  '购件助手',
                   style: TextStyle(fontSize: 10, color: inactive),
                 ),
               ),
@@ -142,7 +127,6 @@ class AppNavigation extends StatelessWidget {
       selectedIndex: selectedIndex,
       onSelected: onSelected,
       destinations: destinations,
-      transfers: transfers,
     );
   }
 }
