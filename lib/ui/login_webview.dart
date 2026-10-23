@@ -44,19 +44,7 @@ const desktopLoginViewportScript = r'''(() => {
   window.__asterDesktopViewport = true;
   const apply = () => {
     if (!document.head) return;
-    const login = location.hostname === 'www.guangyapan.com' &&
-      (location.hash.split('?')[0] === '#/oauth/login' || location.pathname === '/oauth/login');
-    const content = login
-      ? 'width=device-width,initial-scale=1,minimum-scale=0.5,maximum-scale=8,user-scalable=yes'
-      : 'width=1280,minimum-scale=0.1,maximum-scale=8,user-scalable=yes';
-    document.documentElement?.toggleAttribute('data-aster-guangya-login', login);
-    if (login && !document.getElementById('aster-guangya-login-layout')) {
-      const style = document.createElement('style');
-      style.id = 'aster-guangya-login-layout';
-      style.textContent = 'html[data-aster-guangya-login] #app{min-width:0!important;width:100%!important}' +
-        'html[data-aster-guangya-login] #app>div{max-width:480px;margin-inline:auto;width:100%}';
-      document.head.appendChild(style);
-    }
+    const content = 'width=1280,minimum-scale=0.1,maximum-scale=8,user-scalable=yes';
     let tags = [...document.head.querySelectorAll('meta[name="viewport"]')];
     if (!tags.length) {
       const tag = document.createElement('meta');
