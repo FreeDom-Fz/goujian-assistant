@@ -1,5 +1,5 @@
-name: asterlink
-description: 文析助手，支持网盘解析、下载和 BT 在线播放。
+name: goujian_assistant
+description: 购件助手，基于文析助手（AGPL-3.0）二次开发的购物软件物流信息聚合工具。
 publish_to: none
 version: 1.7.0+170
 
