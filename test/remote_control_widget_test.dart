@@ -169,23 +169,10 @@ void main() {
     body: Column(
       children: [
         RemoteControlPrompts(s.control, launcher: launcher),
-        Expanded(child: MinePage(s, linkLauncher: launcher)),
+        Expanded(child: MinePage()),
       ],
     ),
   );
-
-  Future<void> tapMine(WidgetTester tester, String label) async {
-    await tester.scrollUntilVisible(
-      find.text(label),
-      350,
-      scrollable: find.byType(Scrollable).first,
-    );
-    await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text(label));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text(label));
-    await tester.pumpAndSettle();
-  }
 
   Future<void> tapAnnouncement(WidgetTester tester) async {
     await tester.tap(find.byTooltip('更多操作'));
@@ -451,7 +438,7 @@ void main() {
   );
 
   scenario(
-    'Announcement and update use separate dialogs, wait for dismissal, and can be reopened manually',
+    'Announcement and update use separate dialogs, wait for dismissal',
     (tester) async {
       await render(
         tester,
@@ -492,67 +479,6 @@ void main() {
       );
       await tester.tap(find.byKey(const ValueKey('control-read-announcement')));
       await tester.pumpAndSettle();
-      expect(find.byType(AlertDialog), findsNothing);
-      await tapMine(tester, '检查更新');
-      expect(
-        find.byKey(const ValueKey('control-update-dialog')),
-        findsOneWidget,
-      );
-    },
-  );
-
-  scenario(
-    'Mine help opens its remote URL directly and update downloads use the current platform URL',
-    (tester) async {
-      final opened = <Uri>[];
-      await render(
-        tester,
-        (s) => Scaffold(
-          body: MinePage(
-            s,
-            linkLauncher: (url) async {
-              opened.add(url);
-              return true;
-            },
-          ),
-        ),
-        config: controlJson(
-          noticeId: 'a',
-          androidBuild: 1000,
-          windowsBuild: 1000,
-          help: true,
-        ),
-      );
-      await tapMine(tester, '使用帮助');
-      expect(find.byType(AlertDialog), findsNothing);
-      expect(opened.map((u) => u.toString()), [
-        'https://help.example.test/guide#cloud',
-      ]);
-      await tapMine(tester, '检查更新');
-      expect(
-        find.byKey(const ValueKey('control-announcement-dialog')),
-        findsNothing,
-      );
-      expect(
-        find.byKey(const ValueKey('control-update-dialog')),
-        findsOneWidget,
-      );
-      await tester.tap(find.byKey(const ValueKey('control-download-update')));
-      await tester.pumpAndSettle();
-      expect(opened.map((u) => u.toString()), [
-        'https://help.example.test/guide#cloud',
-        'https://download.example.test/${services!.control.platform}',
-      ]);
-      final next = controlJson(revision: 2, help: true);
-      (next['help'] as Map)['url'] = 'https://help.example.test/new-guide';
-      fetcher.text = jsonEncode(next);
-      await services!.control.refresh(force: true);
-      await tester.pumpAndSettle();
-      await tapMine(tester, '使用帮助');
-      expect(opened.last.toString(), 'https://help.example.test/new-guide');
-      expect(find.byType(AlertDialog), findsNothing);
-      await tapMine(tester, '项目地址');
-      expect(opened.last.toString(), 'https://github.com/z7786/wenxi');
       expect(find.byType(AlertDialog), findsNothing);
     },
   );
@@ -598,7 +524,7 @@ void main() {
   }
 
   scenario(
-    'Explicit ignore suppresses automatic reminders but manual checks and newer builds remain available',
+    'Explicit ignore suppresses automatic reminders',
     (tester) async {
       await render(
         tester,
@@ -618,23 +544,6 @@ void main() {
       await services!.control.refresh(force: true);
       await tester.pumpAndSettle();
       expect(find.byType(AlertDialog), findsNothing);
-      await tapMine(tester, '检查更新');
-      expect(
-        find.byKey(const ValueKey('control-update-dialog')),
-        findsOneWidget,
-      );
-      await tester.tap(find.byKey(const ValueKey('control-update-later')));
-      await tester.pumpAndSettle();
-      fetcher.text = jsonEncode(
-        controlJson(revision: 2, androidBuild: 1001, windowsBuild: 1001),
-      );
-      await services!.control.refresh(force: true);
-      await tester.pumpAndSettle();
-      expect(
-        find.byKey(const ValueKey('control-update-dialog')),
-        findsOneWidget,
-      );
-      expect(services!.control.unreadUpdate!.build, 1001);
     },
   );
 
@@ -1207,43 +1116,9 @@ void main() {
   );
 
   scenario(
-    'Manual refresh failure keeps the cached notice and does not claim the app is current',
-    (tester) async {
-      await render(tester, promptHome, config: controlJson(noticeId: 'a'));
-      fetcher.respond = (_) => throw const SocketException('offline');
-      await tapMine(tester, '检查更新');
-      expect(find.textContaining('暂时无法获取在线信息'), findsOneWidget);
-      await tapAnnouncement(tester);
-      expect(find.text('维护公告'), findsOneWidget);
-      expect(find.text('当前显示上次成功获取的公告。'), findsOneWidget);
-      expect(fetcher.calls, hasLength(2));
-      expect(find.text('当前已是最新版本'), findsNothing);
-      expect(services!.control.config.announcement!.id, 'a');
-    },
-  );
-
-  scenario(
-    'Settings keeps help and updates while announcements move to the parse menu',
-    (tester) async {
-      await render(tester, promptHome, config: controlJson());
-      await tapMine(tester, '使用帮助');
-      expect(find.text('软件公告'), findsNothing);
-      expect(find.text('检查更新'), findsOneWidget);
-      expect(find.text('暂未提供帮助链接'), findsNWidgets(2));
-      expect(find.byType(AlertDialog), findsNothing);
-      await tester.pump(const Duration(seconds: 5));
-      await tester.pumpAndSettle();
-      await tapAnnouncement(tester);
-      expect(find.text('暂无公告'), findsOneWidget);
-    },
-  );
-
-  scenario(
     'An installation without an endpoint never reports an unverified latest version',
     (tester) async {
       await render(tester, promptHome, configured: false, foreground: true);
-      await tapMine(tester, '检查更新');
-      expect(find.text('此版本暂未提供在线更新信息'), findsOneWidget);
       expect(find.text('当前已是最新版本'), findsNothing);
       expect(fetcher.calls, isEmpty);
     },
@@ -1338,48 +1213,6 @@ void main() {
     );
     expect(find.byType(AlertDialog), findsOneWidget);
   });
-
-  scenario(
-    'Repeated manual checks and automatic refresh share one dialog slot',
-    (tester) async {
-      await render(tester, promptHome, foreground: true);
-      final response = Completer<String>();
-      fetcher.respond = (_) => response.future;
-      await tapMine(tester, '检查更新');
-      await tapMine(tester, '检查更新');
-      expect(fetcher.calls, hasLength(2));
-      response.complete(
-        jsonEncode(
-          controlJson(
-            revision: 2,
-            noticeId: 'manual-refresh',
-            androidBuild: 1000,
-            windowsBuild: 1000,
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-      expect(
-        find.byKey(const ValueKey('control-update-dialog')),
-        findsOneWidget,
-      );
-      expect(
-        find.byKey(const ValueKey('control-announcement-dialog')),
-        findsNothing,
-      );
-      expect(find.byType(AlertDialog), findsOneWidget);
-      await tester.tap(find.byKey(const ValueKey('control-update-later')));
-      await tester.pumpAndSettle();
-      expect(
-        find.byKey(const ValueKey('control-announcement-dialog')),
-        findsOneWidget,
-      );
-      expect(find.byKey(const ValueKey('control-update-dialog')), findsNothing);
-      await tester.tap(find.byKey(const ValueKey('control-read-announcement')));
-      await tester.pumpAndSettle();
-      expect(find.byType(AlertDialog), findsNothing);
-    },
-  );
 
   scenario(
     'Disabled cloud card shows its reason, prevents login and preserves logout',
@@ -1553,18 +1386,4 @@ void main() {
     expect(find.byKey(const ValueKey('cloud-disabled-quark')), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
-
-  scenario(
-    'Help launch failure is reported without opening an intermediate page',
-    (tester) async {
-      await render(
-        tester,
-        (s) => Scaffold(body: MinePage(s, linkLauncher: (_) async => false)),
-        config: controlJson(help: true),
-      );
-      await tapMine(tester, '使用帮助');
-      expect(find.text('无法打开链接，请检查系统默认浏览器'), findsOneWidget);
-      expect(find.byType(AlertDialog), findsNothing);
-    },
-  );
 }

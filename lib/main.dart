@@ -649,7 +649,7 @@ class _MainShellState extends State<MainShell>
                                 index: selected,
                                 children: [
                                   CloudPage(widget.services),
-                                  MinePage(widget.services),
+                                  MinePage(),
                                 ],
                               ),
                             ),
