@@ -6,12 +6,9 @@ import 'package:flutter/material.dart';
 import '../core/json.dart';
 import '../core/operation_progress.dart';
 import '../data/http.dart';
-import '../data/remote_control_service.dart';
 import '../domain/models.dart';
-import '../domain/file_types.dart';
 import 'operation_progress_view.dart';
 import 'app_theme.dart';
-export '../domain/file_types.dart';
 export 'app_theme.dart' show themeAccent, themeCompanion, themeOnAccent;
 export 'app_background.dart' show backgroundSurface, BackgroundReadable;
 
@@ -110,16 +107,6 @@ void message(BuildContext context, String text, {VoidCallback? onTap}) {
       ),
     ),
   );
-}
-
-bool allowCloudAction(
-  BuildContext context,
-  RemoteControlService control,
-  CloudPlatform platform,
-) {
-  if (control.cloudEnabled(platform)) return true;
-  message(context, control.config.cloud(platform).reason(platform));
-  return false;
 }
 
 Future<T?> busy<T>(
@@ -332,18 +319,14 @@ class FileGlyph extends StatelessWidget {
   final double size;
   @override
   Widget build(BuildContext context) {
-    final kind = fileKind(name, directory: directory);
-    final (icon, color) = switch (kind) {
-      FileKind.folder => (CupertinoIcons.folder_fill, const Color(0xffffbe3d)),
-      FileKind.android => (Icons.android, const Color(0xff3ddc84)),
-      FileKind.image => (CupertinoIcons.photo, const Color(0xffaf52de)),
-      FileKind.video => (CupertinoIcons.play_rectangle, themeAccent(context)),
-      FileKind.audio => (CupertinoIcons.music_note_2, const Color(0xfff06c96)),
-      FileKind.archive => (CupertinoIcons.archivebox, const Color(0xffc29756)),
-      FileKind.pdf => (CupertinoIcons.doc_richtext, const Color(0xffff5a55)),
-      _ => (CupertinoIcons.doc_text, const Color(0xff8e8e93)),
-    };
-    return Icon(icon, color: color, size: size);
+    if (directory) {
+      return Icon(
+        CupertinoIcons.folder_fill,
+        color: const Color(0xffffbe3d),
+        size: size,
+      );
+    }
+    return Icon(CupertinoIcons.doc_text, color: const Color(0xff8e8e93), size: size);
   }
 }
 

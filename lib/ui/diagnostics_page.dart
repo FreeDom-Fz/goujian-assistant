@@ -3,12 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
 import '../diagnostics/app_log.dart';
 import '../diagnostics/diagnostic_bundle.dart';
 import '../diagnostics/diagnostic_share.dart';
 import 'common.dart';
-import 'remote_control_dialogs.dart';
 
 class DiagnosticsPage extends StatefulWidget {
   const DiagnosticsPage(
@@ -17,14 +17,12 @@ class DiagnosticsPage extends StatefulWidget {
     this.saveExport,
     this.shareExport,
     this.openExportLocation,
-    this.linkLauncher,
   });
   final DiagnosticBundle bundle;
   final Future<String?> Function(Uint8List bytes, String name)? saveExport;
   final Future<ShareResultStatus> Function(Uint8List bytes, String name)?
   shareExport;
   final Future<void> Function(String path)? openExportLocation;
-  final RemoteLinkLauncher? linkLauncher;
   @override
   State<DiagnosticsPage> createState() => _DiagnosticsPageState();
 }
@@ -36,7 +34,7 @@ class _DiagnosticsPageState extends State<DiagnosticsPage> {
   String? lastSavedPath;
   DiagnosticLog get log => widget.bundle.log;
   String get exportName =>
-      '文析助手-logs-${applicationVersion.replaceAll('+', '-')}-${DateTime.now().toUtc().microsecondsSinceEpoch}.zip';
+      '购件助手-logs-${applicationVersion.replaceAll('+', '-')}-${DateTime.now().toUtc().microsecondsSinceEpoch}.zip';
   @override
   void initState() {
     super.initState();
@@ -136,11 +134,12 @@ class _DiagnosticsPageState extends State<DiagnosticsPage> {
     if (working) return;
     setState(() => working = true);
     try {
-      await openRemoteLink(
-        context,
+      await launchUrl(
         Uri.parse('https://github.com/z7786/wenxi'),
-        launcher: widget.linkLauncher,
+        mode: LaunchMode.externalApplication,
       );
+    } catch (_) {
+      if (mounted) message(context, '无法打开浏览器，请手动访问项目地址');
     } finally {
       if (mounted) setState(() => working = false);
     }

@@ -12,7 +12,7 @@ Future<File> prepareDiagnosticShare(
   String name, {
   DateTime? now,
 }) async {
-  final ownedName = RegExp(r'^文析助手-logs-[0-9.-]+\.zip$');
+  final ownedName = RegExp(r'^购件助手-logs-[0-9.-]+\.zip$');
   if (!ownedName.hasMatch(name) || p.basename(name) != name) {
     throw ArgumentError('Invalid diagnostic export name');
   }
@@ -52,8 +52,8 @@ Future<ShareResultStatus> shareDiagnosticZip(
   final result = await SharePlus.instance.share(
     ShareParams(
       files: [XFile(file.path, mimeType: 'application/zip')],
-      title: '分享文析助手日志',
-      subject: '文析助手故障日志',
+      title: '分享购件助手日志',
+      subject: '购件助手故障日志',
     ),
   );
   return result.status;

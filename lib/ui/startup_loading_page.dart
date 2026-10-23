@@ -42,7 +42,7 @@ class StartupLoadingPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 28),
                 Text(
-                  '文析助手',
+                  '购件助手',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: colors.onSurface,

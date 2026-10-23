@@ -76,7 +76,7 @@ class DiagnosticBundle {
     final files = <String, String>{
       'summary.txt': diagnosticSummary(log, native, note: note),
       'README.txt':
-          '文析助手本地诊断包\n'
+          '购件助手本地诊断包\n'
           '版本：$applicationVersion\n'
           'summary.txt：便于反馈的简短排查摘要，已按日志脱敏规则隐藏敏感内容。\n'
           'logs/：Flutter 错误与操作线索，按 UTC 时间和会话编号关联。\n'

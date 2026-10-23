@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../download/navigation_transfers.dart';
-import 'navigation_transfer_icon.dart';
 import '../domain/appearance.dart';
 import 'app_theme.dart';
 
@@ -18,14 +16,12 @@ class LiquidBottomNavigation extends StatefulWidget {
     required this.selectedIndex,
     required this.onSelected,
     required this.destinations,
-    this.transfers,
   }) : assert(destinations.length > 1),
        assert(selectedIndex >= 0 && selectedIndex < destinations.length);
 
   final int selectedIndex;
   final ValueChanged<int> onSelected;
   final List<(String, String)> destinations;
-  final ValueListenable<NavigationTransferStatus>? transfers;
 
   @override
   State<LiquidBottomNavigation> createState() => _LiquidBottomNavigationState();
@@ -461,10 +457,6 @@ class _LiquidBottomNavigationState extends State<LiquidBottomNavigation>
                                                   (_pressedIndex != null ||
                                                       _dragIndex != null) &&
                                                   preview == i,
-                                              transfers: i == 2
-                                                  ? widget.transfers
-                                                  : null,
-                                              transfer: i == 2,
                                             ),
                                           ),
                                         ),
@@ -495,13 +487,10 @@ class _NavigationTabContent extends StatefulWidget {
     required this.color,
     required this.selected,
     required this.pressed,
-    required this.transfer,
-    this.transfers,
   });
   final String label, asset;
   final Color color;
-  final bool selected, pressed, transfer;
-  final ValueListenable<NavigationTransferStatus>? transfers;
+  final bool selected, pressed;
   @override
   State<_NavigationTabContent> createState() => _NavigationTabContentState();
 }
@@ -553,19 +542,13 @@ class _NavigationTabContentState extends State<_NavigationTabContent>
                   ),
                   child: child,
                 ),
-                child: widget.transfer
-                    ? NavigationTransferIcon(
-                        asset: widget.asset,
-                        color: color!,
-                        transfers: widget.transfers,
-                      )
-                    : SvgPicture.asset(
-                        widget.asset,
-                        width: 25,
-                        height: 25,
-                        colorFilter: ColorFilter.mode(color!, BlendMode.srcIn),
-                        excludeFromSemantics: true,
-                      ),
+                child: SvgPicture.asset(
+                  widget.asset,
+                  width: 25,
+                  height: 25,
+                  colorFilter: ColorFilter.mode(color!, BlendMode.srcIn),
+                  excludeFromSemantics: true,
+                ),
               ),
             ),
             const SizedBox(height: 4),

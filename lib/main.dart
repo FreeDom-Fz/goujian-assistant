@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:media_kit/media_kit.dart';
 import 'package:tray_manager/tray_manager.dart';
 import 'package:window_manager/window_manager.dart';
 import 'app_services.dart';
@@ -13,28 +12,18 @@ import 'diagnostics/app_log.dart';
 import 'diagnostics/diagnostic_runtime.dart';
 import 'ui/startup_failure_page.dart';
 export 'ui/startup_failure_page.dart';
-import 'domain/downloads.dart';
 import 'ui/app_navigation.dart';
-import 'ui/remote_control_dialogs.dart';
 import 'ui/app_popup_menu.dart';
 import 'ui/cloud_page.dart';
-import 'ui/cloud_accounts_page.dart';
 import 'ui/common.dart';
 import 'ui/app_theme.dart';
 import 'ui/app_background.dart';
 export 'ui/app_theme.dart' show appTheme;
 import 'ui/startup_loading_page.dart';
-import 'ui/parse_page.dart' show directDownloadDialog;
 import 'ui/mine_page.dart';
-import 'ui/donate_page.dart';
-import 'ui/about_dialog.dart';
-import 'ui/download_shutdown_prompt.dart';
-import 'ui/guest_download_prompt.dart';
-import 'ui/player_page.dart';
-import 'platform/external_open.dart';
-import 'playback/external_playback.dart';
-import 'platform/windows_pip.dart';
 import 'platform/windows_window_theme.dart';
+
+const appWindowMinimumSize = Size(800, 600);
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,17 +33,13 @@ Future<void> main() async {
       for (final entry in {
         'Gopeed': 'Gopeed-LICENSE.txt',
         'Android NDK / LLVM': 'android-ndk-NOTICE.txt',
-        'media_kit native build': 'media-native-build-LICENSE.txt',
         'Noto Sans SC': 'NotoSansCJK-OFL.txt',
-        'LanzouAPI': 'LanzouAPI-LICENSE.txt',
-        '115driver m115 protocol': '115driver.txt',
       }.entries) {
         yield LicenseEntryWithLineBreaks([
           entry.key,
         ], await rootBundle.loadString('assets/licenses/${entry.value}'));
       }
     });
-    MediaKit.ensureInitialized();
     if (Platform.isWindows) {
       await windowManager.ensureInitialized();
       unawaited(
@@ -114,7 +99,7 @@ class _BootstrapState extends State<_Bootstrap> {
   Widget build(BuildContext context) => FutureBuilder<AppServices>(
     future: services,
     builder: (context, state) {
-      if (state.hasData) return AsterLinkApp(state.data!);
+      if (state.hasData) return GoujianApp(state.data!);
       return MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: appTheme(Brightness.light),
@@ -131,8 +116,8 @@ class _BootstrapState extends State<_Bootstrap> {
   );
 }
 
-class AsterLinkApp extends StatelessWidget {
-  const AsterLinkApp(
+class GoujianApp extends StatelessWidget {
+  const GoujianApp(
     this.services, {
     super.key,
     this.initialTab = 0,
@@ -147,7 +132,7 @@ class AsterLinkApp extends StatelessWidget {
     builder: (context, _) {
       final settings = services.settings;
       return MaterialApp(
-        title: '文析助手',
+        title: '购件助手',
         debugShowCheckedModeBanner: false,
         locale: const Locale('zh', 'CN'),
         supportedLocales: const [Locale('zh', 'CN'), Locale('en')],
@@ -194,11 +179,9 @@ class MainShell extends StatefulWidget {
     this.services, {
     super.key,
     this.initialTab = 0,
-    this.externalPlayerBuilder,
   });
   final AppServices services;
   final int initialTab;
-  final Widget Function(ExternalOpenRequest)? externalPlayerBuilder;
   @override
   State<MainShell> createState() => _MainShellState();
 }
@@ -207,30 +190,12 @@ class _MainShellState extends State<MainShell>
     with WindowListener, TrayListener, WidgetsBindingObserver {
   late int selected = widget.initialTab;
   bool trayReady = false, closing = false;
-  bool _openingExternal = false, _externalScheduled = false;
   static const titles = ['物流', '我的'];
+
   @override
   void initState() {
     super.initState();
-    widget.services.externalOpens.addListener(_externalAvailable);
     WidgetsBinding.instance.addObserver(this);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      final state = WidgetsBinding.instance.lifecycleState;
-      widget.services.clipboard.setForeground(
-        state == null || state == AppLifecycleState.resumed,
-      );
-      widget.services.control.setForeground(
-        state == null || state == AppLifecycleState.resumed,
-      );
-      widget.services.announcements.setForeground(
-        state == null || state == AppLifecycleState.resumed,
-      );
-      if (state == null || state == AppLifecycleState.resumed) {
-        widget.services.refreshPublicDownloadPassword();
-      }
-      _externalAvailable();
-    });
     if (Platform.isWindows && widget.services.platformFeatures) {
       windowManager.addListener(this);
       trayManager.addListener(this);
@@ -238,127 +203,9 @@ class _MainShellState extends State<MainShell>
     }
   }
 
-  void _clipboardChanged() {
-    if (mounted) setState(() {});
-  }
-
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    widget.services.clipboard.setForeground(state == AppLifecycleState.resumed);
-    widget.services.control.setForeground(state == AppLifecycleState.resumed);
-    widget.services.announcements.setForeground(
-      state == AppLifecycleState.resumed,
-    );
-    if (state == AppLifecycleState.resumed) {
-      widget.services.refreshPublicDownloadPassword();
-      _externalAvailable();
-    }
-  }
-
-  @override
-  void didChangePlatformBrightness() {
-    widget.services.downloadOverlay.refreshAppearance();
-  }
-
-  void _externalAvailable() {
-    final lifecycle = WidgetsBinding.instance.lifecycleState;
-    if (!mounted ||
-        _openingExternal ||
-        _externalScheduled ||
-        !widget.services.externalOpens.hasPending ||
-        lifecycle != null && lifecycle != AppLifecycleState.resumed) {
-      return;
-    }
-    _externalScheduled = true;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _externalScheduled = false;
-      if (mounted) unawaited(_openExternal());
-    });
-    WidgetsBinding.instance.ensureVisualUpdate();
-  }
-
-  Future<void> _externalHome() async {
-    final closing = <Future<Object?>>[];
-    Navigator.of(context).popUntil((route) {
-      if (route.isFirst) return true;
-      if (route is TransitionRoute) closing.add(route.completed);
-      return false;
-    });
-    // Dispose the previous player before starting another playback session.
-    await Future.wait(closing);
-  }
-
-  Future<void> _openExternal() async {
-    if (_openingExternal) return;
-    _openingExternal = true;
-    try {
-      while (mounted) {
-        final lifecycle = WidgetsBinding.instance.lifecycleState;
-        if (lifecycle != null && lifecycle != AppLifecycleState.resumed) break;
-        final request = widget.services.externalOpens.take();
-        if (request == null) break;
-        await _externalHome();
-        if (!mounted) break;
-        if (request.kind == ExternalOpenKind.error) {
-          message(context, request.message);
-        } else if (request.kind == ExternalOpenKind.play) {
-          final page =
-              widget.externalPlayerBuilder?.call(request) ??
-              PlayerPage(
-                externalPlayback(widget.services, request),
-                subtitleDirectory: Directory(
-                  '${widget.services.cacheDirectory.path}/playback-subtitles',
-                ),
-              );
-          unawaited(
-            Navigator.push<void>(
-              context,
-              MaterialPageRoute(builder: (_) => page),
-            ),
-          );
-          await WidgetsBinding.instance.endOfFrame;
-        } else {
-          final url = request.downloadUrl;
-          if (url != null) {
-            widget.services.transferTab.value = 0;
-            setState(() => selected = 2);
-            await directDownloadDialog(
-              context,
-              widget.services,
-              initial: url,
-              fileName: request.name,
-              headers: request.headers,
-              external: true,
-            );
-          } else {
-            setState(() => selected = 0);
-            widget.services.sharedText.value = null;
-            widget.services.sharedText.value = request.sharedText;
-          }
-        }
-      }
-    } catch (error, stack) {
-      DiagnosticLog.error('app.external_open_failed', error, stack);
-      if (mounted) message(context, errorText(error));
-    } finally {
-      _openingExternal = false;
-      if (mounted) _externalAvailable();
-    }
-  }
-
-  @override
-  void onWindowFocus() {
-    widget.services.clipboard.setForeground(true);
-    widget.services.control.setForeground(true);
-    widget.services.announcements.setForeground(true);
-    widget.services.refreshPublicDownloadPassword();
-  }
-
-  @override
-  void onWindowBlur() {
-    widget.services.clipboard.setForeground(false);
-    widget.services.control.setForeground(false);
-    widget.services.announcements.setForeground(false);
+    // 站点物流链路接入后在此处理前台/后台刷新。
   }
 
   Future<void> _desktop() async {
@@ -407,46 +254,6 @@ class _MainShellState extends State<MainShell>
     if (closing || !mounted) return;
     closing = true;
     try {
-      final active =
-          widget.services.downloads.tasks.any((t) => t.active) ||
-          widget.services.uploads.activeCount > 0 ||
-          widget.services.lan.running;
-      if (active) {
-        await windowManager.show();
-        await windowManager.focus();
-        if (!mounted) return;
-        final action = await showDialog<String>(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text('还有传输任务'),
-            content: Text(
-              widget.services.lan.running
-                  ? '设备互联正在运行。可保留后台传输；退出应用会结束文件分享。'
-                  : '可保留后台传输，或停止任务后退出。中断的上传需要重新上传。',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('取消'),
-              ),
-              if (trayReady && !forceExit)
-                TextButton(
-                  onPressed: () => Navigator.pop(context, 'background'),
-                  child: const Text('后台传输'),
-                ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, 'exit'),
-                child: const Text('暂停并退出'),
-              ),
-            ],
-          ),
-        );
-        if (action == null) return;
-        if (action == 'background') {
-          await windowManager.hide();
-          return;
-        }
-      }
       await widget.services.close();
       if (trayReady) await trayManager.destroy();
       DiagnosticRuntime.stop();
@@ -461,12 +268,7 @@ class _MainShellState extends State<MainShell>
 
   @override
   void dispose() {
-    widget.services.externalOpens.removeListener(_externalAvailable);
     WidgetsBinding.instance.removeObserver(this);
-    widget.services.clipboard.removeListener(_clipboardChanged);
-    widget.services.clipboard.setForeground(false);
-    widget.services.control.setForeground(false);
-    widget.services.announcements.setForeground(false);
     if (Platform.isWindows && widget.services.platformFeatures) {
       windowManager.removeListener(this);
       trayManager.removeListener(this);
@@ -476,13 +278,6 @@ class _MainShellState extends State<MainShell>
 
   Future<void> _menu(String action) async {
     switch (action) {
-      case 'new':
-        await directDownloadDialog(context, widget.services);
-      case 'accounts':
-        await Navigator.push<void>(
-          context,
-          MaterialPageRoute(builder: (_) => CloudAccountsPage(widget.services)),
-        );
       case 'cloud-layout':
         await Navigator.push<void>(
           context,
@@ -490,40 +285,20 @@ class _MainShellState extends State<MainShell>
             builder: (_) => CloudListSettingsPage(widget.services),
           ),
         );
-      case 'refresh':
-        await widget.services.refreshAccounts();
-      case 'pause':
-        await busy(
-          context,
-          widget.services.downloads.pauseAll,
-          label: '暂停全部任务…',
-        );
-      case 'resume':
-        await busy(context, widget.services.downloads.resumeAll);
-      case 'clear':
-        if (await confirm(context, '清理完成记录', '仅移除已完成记录，已下载的文件会保留。') &&
-            mounted) {
-          await busy(context, () async {
-            for (final task in widget.services.downloads.tasks.where(
-              (t) => t.status == DownloadStatus.completed,
-            )) {
-              await widget.services.downloads.delete(task.id);
-            }
-          });
-        }
       case 'about':
-        await showWenxiAbout(context, widget.services.control);
-      case 'donate':
-        await Navigator.push<void>(
-          context,
-          MaterialPageRoute(builder: (_) => const DonatePage()),
+        showAboutDialog(
+          context: context,
+          applicationName: '购件助手',
+          applicationVersion: '0.1.0',
+          applicationIcon: const SizedBox(
+            width: 44,
+            height: 44,
+            child: Image(image: AssetImage('assets/icons/app.png')),
+          ),
+          children: const [
+            Text('基于文析助手（AGPL-3.0）二次开发的购物物流助手。'),
+          ],
         );
-      case 'stop-uploads':
-        if (await confirm(context, '停止全部上传', '未完成任务将停止，重试时会从头上传。') && mounted) {
-          await busy(context, widget.services.uploads.stopAll);
-        }
-      case 'clear-uploads':
-        await busy(context, widget.services.uploads.clearCompleted);
     }
   }
 
@@ -534,19 +309,8 @@ class _MainShellState extends State<MainShell>
         label: '排序与隐藏',
         icon: CupertinoIcons.slider_horizontal_3,
       ),
-      AppMenuAction(
-        value: 'accounts',
-        label: '账号管理',
-        icon: CupertinoIcons.person_2,
-      ),
-      AppMenuAction(
-        value: 'refresh',
-        label: '刷新全部账号',
-        icon: CupertinoIcons.arrow_clockwise,
-      ),
     ],
     _ => const [
-      AppMenuAction(value: 'donate', label: '打赏作者', icon: CupertinoIcons.gift),
       AppMenuAction(
         value: 'about',
         label: '关于购件助手',
@@ -554,6 +318,7 @@ class _MainShellState extends State<MainShell>
       ),
     ],
   };
+
   Widget _navigation(BuildContext context, {required bool rail}) =>
       AppNavigation(
         selectedIndex: selected,
@@ -628,22 +393,6 @@ class _MainShellState extends State<MainShell>
                         constraints: const BoxConstraints(maxWidth: 1120),
                         child: Column(
                           children: [
-                            RemoteControlPrompts(
-                              widget.services.control,
-                              updater: widget.services.appUpdates,
-                            ),
-                            GuestDownloadPrompt(widget.services),
-                            DownloadShutdownPrompt(
-                              widget.services.downloadShutdown,
-                              showWindow:
-                                  widget.services.platformFeatures &&
-                                      Platform.isWindows
-                                  ? () async {
-                                      await windowManager.show();
-                                      await windowManager.focus();
-                                    }
-                                  : null,
-                            ),
                             Expanded(
                               child: IndexedStack(
                                 index: selected,

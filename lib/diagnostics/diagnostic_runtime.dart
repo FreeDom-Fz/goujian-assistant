@@ -71,7 +71,7 @@ class DiagnosticRuntime with WidgetsBindingObserver {
         directory = Directory(
           p.join(
             (await getApplicationSupportDirectory()).path,
-            'AsterLink',
+            'GoujianAssistant',
             'diagnostics',
           ),
         );

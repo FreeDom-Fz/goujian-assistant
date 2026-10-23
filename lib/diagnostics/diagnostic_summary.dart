@@ -12,7 +12,7 @@ String diagnosticSummary(DiagnosticLog log, Json native, {String note = ''}) {
   String timestamp(Object? value) => beijingLogTime(value);
 
   final text = StringBuffer()
-    ..writeln('文析助手排查摘要')
+    ..writeln('购件助手排查摘要')
     ..writeln('版本：$applicationVersion')
     ..writeln('生成时间：${beijingLogTime(log.clock())}（北京时间 UTC+08:00）')
     ..writeln('系统：${clean(Platform.operatingSystemVersion, 200)}');
