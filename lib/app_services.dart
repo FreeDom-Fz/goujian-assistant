@@ -156,11 +156,15 @@ class AppServices extends ChangeNotifier {
         );
         _webEnvironment = await WebViewEnvironment.create(
           settings: WebViewEnvironmentSettings(
-            userDataFolder: p.join(dataDirectory.path, 'webview'),
-            // 拼多多登录页在 WebView2 下曾出现连接被中止（code 9），而系统
-            // Edge（同内核同网络）可正常加载：禁用 QUIC（UDP 路径）与
-            // DNS HTTPS/SVCB 记录（本机 DNS 解析异常时可能指向错误端点），
-            // 强制走 TCP/HTTP2 与常规 A/AAAA 解析。
+            // WebView2 profile 必须放纯 ASCII 路径：应用数据目录继承自
+            // path_provider 的 org 名含中文（%APPDATA%\com.asterlink\文析助手），
+            // Chromium 对非 ASCII user data 路径存在兼容问题，曾表现为
+            // 拼多多登录页连接被中止（code 9）；同时禁用 QUIC 与 DNS
+            // HTTPS/SVCB 记录（本机 DNS 解析异常时可能指向错误端点）。
+            userDataFolder: p.join(
+              Platform.environment['LOCALAPPDATA'] ?? Directory.systemTemp.path,
+              'goujian_webview',
+            ),
             additionalBrowserArguments:
                 '--disable-quic --disable-features=UseDnsHttpsSvcbAlpn,UseDnsHttpsSvcb',
           ),
