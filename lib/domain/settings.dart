@@ -112,6 +112,7 @@ class AppSettings {
           CloudPlatform.weiyun => 'weiyun',
           CloudPlatform.pan115 => 'pan115',
           CloudPlatform.wopan => 'wopan',
+          CloudPlatform.pdd => null,
           CloudPlatform.lanzou || null => null,
         };
   int connectionsFor(CloudPlatform? platform, [String? profile]) {

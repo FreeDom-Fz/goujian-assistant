@@ -2,66 +2,182 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import '../app_services.dart';
+import '../domain/auth.dart';
 import '../domain/cloud_list_preferences.dart';
 import '../domain/models.dart';
 import 'common.dart';
+import 'login_page.dart';
+import 'pdd_orders_page.dart';
 
-/// 物流站点占位条目。站点链路接入（#6）后替换为站点列表。
+/// 站点列表。当前为拼多多单站点；后续站点接入时在此追加。
 const cloudEntries = <(String, String, CloudPlatform?)>[
-  ('quark', '夸克网盘', CloudPlatform.quark),
-  ('123', '123网盘', CloudPlatform.pan123),
-  ('guangya', '光鸭云盘', CloudPlatform.guangya),
-  ('baidu', '百度网盘', CloudPlatform.baidu),
-  ('ali', '阿里云盘', CloudPlatform.aliyun),
-  ('weiyun', '腾讯微云', CloudPlatform.weiyun),
-  ('xunlei', '迅雷网盘', CloudPlatform.xunlei),
-  ('uc', 'UC网盘', CloudPlatform.uc),
-  ('yidong', '移动网盘', CloudPlatform.c139),
-  ('tianyi', '天翼网盘', CloudPlatform.tianyi),
-  ('115', '115网盘', CloudPlatform.pan115),
-  ('wopan', '中国联通云盘', CloudPlatform.wopan),
-  ('lanzous', '蓝奏云优享版', CloudPlatform.ilanzou),
-  ('lanzous', '蓝奏云', CloudPlatform.lanzou),
-  ('ctfile', '城通网盘', CloudPlatform.ctfile),
-  ('feijipan', '小飞机网盘', CloudPlatform.feijipan),
-  ('pikpak', 'PikPak网盘', CloudPlatform.pikpak),
-  ('github', 'GitHub', CloudPlatform.github),
+  ('pdd', '拼多多', CloudPlatform.pdd),
 ];
 
-/// 物流页。网盘业务删除后当前阶段为空占位，站点物流链路（#6）
-/// 接入后在此展示站点列表与物流信息。
-class CloudPage extends StatelessWidget {
+/// 站点徽标。站点无内置图标资产时使用品牌色首字徽标。
+class PlatformBadge extends StatelessWidget {
+  const PlatformBadge({super.key, this.text, this.size = 40, this.color});
+  final String? text;
+  final double size;
+  final Color? color;
+  @override
+  Widget build(BuildContext context) {
+    final t = text ?? '拼';
+    return Container(
+      width: size,
+      height: size,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: color ?? const Color(0xFFE02E24),
+        borderRadius: BorderRadius.circular(size * .2),
+      ),
+      child: Text(
+        t.characters.first,
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: size * .42,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
+  }
+}
+
+/// 物流页。展示站点列表与登录状态，站点物流链路（#6）在此接入。
+class CloudPage extends StatefulWidget {
   const CloudPage(this.services, {super.key});
   final AppServices services;
+  @override
+  State<CloudPage> createState() => _CloudPageState();
+}
+
+class _CloudPageState extends State<CloudPage> {
+  static const _platform = CloudPlatform.pdd;
+  bool _loggingIn = false;
+
+  Future<void> _login() async {
+    if (_loggingIn) return;
+    setState(() => _loggingIn = true);
+    try {
+      await openLogin(context, widget.services, pddLoginTarget);
+    } finally {
+      if (mounted) setState(() => _loggingIn = false);
+    }
+  }
 
   @override
-  Widget build(BuildContext context) => Center(
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const Text(
-          '物流站点建设中',
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          '站点登录与物流信息拉取将在下一步接入',
-          style: TextStyle(fontSize: 12.5, color: secondary(context)),
-        ),
-        const SizedBox(height: 16),
-        OutlinedButton.icon(
-          onPressed: () => Navigator.push<void>(
-            context,
-            MaterialPageRoute(
-              builder: (_) => CloudListSettingsPage(services),
-            ),
+  Widget build(BuildContext context) {
+    final credential = widget.services.vault.credential(_platform);
+    final loggedIn = LoginCredentials.stored(_platform, credential);
+    return SafeArea(
+      top: false,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 720),
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+            children: [
+              Card(
+                elevation: 0,
+                margin: const EdgeInsets.only(bottom: 8),
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Row(
+                    children: [
+                      const PlatformBadge(text: '拼'),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              '拼多多',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              loggedIn
+                                  ? '已登录，可查看订单与物流'
+                                  : '登录后查看订单与物流',
+                              style: TextStyle(
+                                fontSize: 12.5,
+                                color: secondary(context),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
+                        decoration: BoxDecoration(
+                          color: loggedIn
+                              ? const Color(0x1A34C759)
+                              : Theme.of(context).disabledColor.withValues(
+                                  alpha: .12,
+                                ),
+                          borderRadius: BorderRadius.circular(999),
+                        ),
+                        child: Text(
+                          loggedIn ? '已登录' : '未登录',
+                          style: TextStyle(
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.w600,
+                            color: loggedIn
+                                ? const Color(0xFF2E9E44)
+                                : Theme.of(context).disabledColor,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              if (loggedIn)
+                FilledButton.icon(
+                  onPressed: () => Navigator.push<void>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => PddOrdersPage(widget.services),
+                    ),
+                  ),
+                  icon: const Icon(CupertinoIcons.cart),
+                  label: const Text('打开订单页'),
+                )
+              else
+                FilledButton.icon(
+                  onPressed: _loggingIn ? null : _login,
+                  icon: _loggingIn
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(CupertinoIcons.person_crop_circle),
+                  label: Text(_loggingIn ? '登录中…' : '登录拼多多'),
+                ),
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: () => Navigator.push<void>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => CloudListSettingsPage(widget.services),
+                  ),
+                ),
+                icon: const Icon(CupertinoIcons.slider_horizontal_3),
+                label: const Text('站点排序与隐藏'),
+              ),
+            ],
           ),
-          icon: const Icon(CupertinoIcons.slider_horizontal_3),
-          label: const Text('排序与隐藏'),
         ),
-      ],
-    ),
-  );
+      ),
+    );
+  }
 }
 
 class CloudListSettingsPage extends StatefulWidget {
@@ -121,7 +237,7 @@ class _CloudListSettingsPageState extends State<CloudListSettingsPage> {
     canPop: !_saving,
     child: Scaffold(
       appBar: AppBar(
-        title: const Text('排序与隐藏'),
+        title: const Text('站点排序与隐藏'),
         actions: [
           TextButton(
             onPressed: _saving ? null : _save,
@@ -141,7 +257,9 @@ class _CloudListSettingsPageState extends State<CloudListSettingsPage> {
                   padding: const EdgeInsets.fromLTRB(20, 8, 12, 8),
                   child: Row(
                     children: [
-                      const Expanded(child: Text('拖动右侧手柄排序，关闭开关隐藏。点击完成保存。')),
+                      const Expanded(
+                        child: Text('拖动右侧手柄排序，关闭开关隐藏。点击完成保存。'),
+                      ),
                       TextButton(
                         onPressed: _saving
                             ? null
@@ -189,7 +307,7 @@ class _CloudListSettingsPageState extends State<CloudListSettingsPage> {
                             ),
                             child: Row(
                               children: [
-                                PlatformMark(icon: entry.$1),
+                                const PlatformBadge(text: '拼'),
                                 const SizedBox(width: 12),
                                 Expanded(
                                   child: Text(

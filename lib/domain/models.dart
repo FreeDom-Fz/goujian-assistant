@@ -53,6 +53,10 @@ enum CloudPlatform {
     'github.com',
     'raw.githubusercontent.com',
     'codeload.github.com',
+  ]),
+  pdd('Pdd', '拼多多', '拼多多', 'pdd', [
+    'yangkeduo.com',
+    'pinduoduo.com',
   ]);
 
   const CloudPlatform(

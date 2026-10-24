@@ -194,6 +194,18 @@ class WebLoginTarget {
   }
 }
 
+/// 拼多多站点登录目标（#6）。
+///
+/// 登录域名 mobile.yangkeduo.com（www.pinduoduo.com 会引导到移动端）；
+/// 登录方式为手机号+验证码或扫码，无滑块验证。登录态保存在
+/// yangkeduo.com / pinduoduo.com 域 Cookie 中（PDDAccessToken、
+/// pdd_user_id 等），故 Cookie 白名单覆盖两个域。
+final pddLoginTarget = WebLoginTarget(
+  CloudPlatform.pdd,
+  'https://mobile.yangkeduo.com/login.html',
+  ['yangkeduo.com', 'pinduoduo.com'],
+);
+
 class LoginPollingPolicy {
   int? _last, _failedAt;
   String? _failedValue;
