@@ -133,9 +133,9 @@ class WebLoginTarget {
   final String? localStorageKey;
   static const desktop =
       'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) ';
-  static const desktopUserAgent = '${desktop}Chrome/131.0.0.0 Safari/537.36';
+  static const desktopUserAgent = '${desktop}Chrome/147.0.0.0 Safari/537.36';
   static const mobileUserAgent =
-      'Mozilla/5.0 (Linux; Android 13; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36';
+      'Mozilla/5.0 (Linux; Android 13; Mobile) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36';
 
   // 通用 localStorage 读取；站点专属脚本在 #6 按站点扩展。
   String get readStorageScript {

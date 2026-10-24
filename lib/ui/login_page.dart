@@ -404,6 +404,17 @@ class _WebLoginPageState extends State<WebLoginPage>
       }
     },
     onLoadStop: (web, uri) => unawaited(_loaded(web, uri)),
+    onLoadError: (web, url, code, message) {
+      if (!_current(web)) return;
+      diagnostics.record(
+        'load_error',
+        level: 'warning',
+        stage: 'load',
+        error: '$code $message',
+        stack: StackTrace.current,
+      );
+      if (mounted) setState(() => error = '页面加载失败（$code）：$message');
+    },
     onRenderProcessGone: (web, detail) => _rendererGone(web, detail),
     onTitleChanged: (web, title) {
       if (!_current(web) || popup != null || title == null) return;
