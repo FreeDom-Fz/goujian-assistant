@@ -6,10 +6,8 @@ import 'http.dart';
 /// 拼多多订单列表接口 order_list_v4 的数据层（#6）。
 ///
 /// 链路：以存储的 Cookie（Credential.primary）请求移动端订单接口，
-/// 返回订单列表与 offset 游标用于翻页。anti_content 为抓包样本中的
-/// 静态签名（2026-10-24 实测重放仍有效，返回实时订单）；签名有时效，
-/// 失效后接口将返回风控错误，刷新机制（从页面脚本提取/自动抓取）列为
-/// 后续增强，暂以内置常量提供。
+/// 返回订单列表与 offset 游标用于翻页。请求体不含 anti_content 签名，
+/// 2026-10-24 实测接口不强制校验该字段（对照实验：带/不带均正常返回）。
 class PddApi {
   const PddApi(this.http);
   final JsonHttp http;
@@ -20,11 +18,6 @@ class PddApi {
       '(KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36';
   static const _referer =
       '$base/orders.html?type=0&comment_tab=1&combine_orders=1&main_orders=1';
-
-  /// 抓包样本的 anti_content（见 D:\ai项目\物流助手\拼多多链路抓包）。
-  /// 请求体其余字段与样本一致，page 恒为 1，翻页依赖 offset 游标。
-  static const _sampleAntiContent =
-      '0atndgEeHAZ9AffPC9NY1NzdYC9dpIBXQt8x7VjE5A-wc3EmTOiM9BBGM0j7tHsbkPFTarP5L_fJffX3Xhugm6J6qVFpqy5VjdjCkbb9kbHMiK4SdcIDZ6lSA0hnqpBh35I-WO43BdpeDVt3QydEe0CYoEpId_b-TKxJR67XOmrkcHDxLYvpd3Tk0LN7gVgU0JQ6zOK0SXGh0PFQ_73OazRwUYUH3aY5emRBrBFVh8M-qzw_TZEacmll1zV0Sax8jrDFgcGR1AOcTU1ETgPIxzgChyfX8RIN14cC_GRXW8cGezupG9goC5RK8SO-NLfXIoUkphEmsgTfyv2PVMJVgcOVd1RpIP99pUYjtUCdM8-jDdgmkS6_oUxT23O515jlohejhIJOeU5y4D5m1nVoGRJ6_dcoaQTinSCisUexGmBADOwdkEoymR_y6KGb0CvIvqnSylCgc0_cDk_lhmBKKem-BvN_QYLIgKbeXHQvHsG1G0bDhbXTS0K8qWDQRTtV-tgIWnb2IR6SDF7EQDsM-prypXYxTN0C26vH9J7J6v3gu4Yu27Jahz4IU9v7cVQMG3Hx_JWlWEF-x__VwlwuX4bRmaff';
 
   static String _fmt(int cents) => (cents / 100).toStringAsFixed(2);
 
@@ -60,7 +53,6 @@ class PddApi {
         'page_from': 0,
         'front_env': 1,
         'pay_front_supports': <Object>[],
-        'anti_content': _sampleAntiContent,
         'size': size,
         'offset': ?offset,
       },
