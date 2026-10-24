@@ -109,7 +109,9 @@ class _CloudPageState extends State<CloudPage> {
       if (!(pairs.containsKey('PDDAccessToken') ||
           pairs.containsKey('pdd_user_id') ||
           pairs.containsKey('pdd_user_uin'))) {
-        message(context, 'Cookie 缺少拼多多会话字段（PDDAccessToken / pdd_user_id / pdd_user_uin），请复制完整 Cookie');
+        if (mounted) {
+          message(context, 'Cookie 缺少拼多多会话字段（PDDAccessToken / pdd_user_id / pdd_user_uin），请复制完整 Cookie');
+        }
         return;
       }
       await widget.services.vault.putCredential(_platform, credential);

@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'core/json.dart';
 import 'diagnostics/app_log.dart';
 import 'data/backgrounds.dart';
+import 'data/http.dart';
 import 'data/state_store.dart';
 import 'domain/appearance.dart';
 import 'domain/background.dart';
@@ -47,6 +48,7 @@ class AppServices extends ChangeNotifier {
   late final Vault vault;
   late final BackgroundRepository backgrounds;
   late final WindowsActions windows;
+  late final JsonHttp http = DioJsonHttp();
   AppSettings get settings => AppSettings.fromJson(store.data.obj('settings'));
   bool _closed = false;
   WebViewEnvironment? _webEnvironment;
