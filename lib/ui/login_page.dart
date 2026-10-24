@@ -90,6 +90,7 @@ class _WebLoginPageState extends State<WebLoginPage>
       manualOpen = false,
       visible = true,
       _foundOnce = false;
+  bool _saving = false;
   double progress = 0;
   String status = '完成网页登录后将自动保存登录信息', error = '';
   bool get active => mounted && !leaving && !completed;
@@ -230,6 +231,14 @@ class _WebLoginPageState extends State<WebLoginPage>
     );
   }
 
+  /// 拼多多会话凭据判定：Cookie 中须包含任一关键会话字段。
+  bool _validPddCredential(String raw) {
+    final pairs = LoginCredentials.cookiePairs(raw);
+    return pairs.containsKey('PDDAccessToken') ||
+        pairs.containsKey('pdd_user_id') ||
+        pairs.containsKey('pdd_user_uin');
+  }
+
   Future<void> _poll({bool userInitiated = false}) async {
     if (!active ||
         !visible ||
@@ -267,9 +276,42 @@ class _WebLoginPageState extends State<WebLoginPage>
       if (!_foundOnce) {
         _foundOnce = true;
         diagnostics.record('credentials_found', stage: 'read_credentials');
-        setState(
-          () => status = '已读取到登录信息；站点验证与账号保存将在下一步接入（当前为框架阶段）',
+      }
+      if (widget.target.platform == CloudPlatform.pdd &&
+          !_validPddCredential(candidate)) {
+        setState(() => status = '未检测到拼多多登录凭据，请确认已在页面完成登录后再试');
+        return;
+      }
+      if (_saving) return;
+      _saving = true;
+      try {
+        final credential = LoginCredentials.candidate(
+          widget.target.platform,
+          candidate,
+          widget.services.vault.credential(widget.target.platform),
         );
+        await widget.services.vault.putCredential(
+          widget.target.platform,
+          credential,
+        );
+        if (!mounted || manualOpen) return;
+        completed = true;
+        timer?.cancel();
+        setState(() => status = '登录成功，登录信息已保存');
+        diagnostics.record('credentials_saved', stage: 'save_credentials');
+        await Future<void>.delayed(const Duration(milliseconds: 500));
+        if (mounted && !manualOpen) Navigator.pop(context);
+      } catch (e, stack) {
+        diagnostics.record(
+          'credential_save_failed',
+          level: 'warning',
+          stage: 'save_credentials',
+          error: e,
+          stack: stack,
+        );
+        if (mounted) setState(() => status = errorText(e));
+      } finally {
+        _saving = false;
       }
     } catch (e, stack) {
       if (_current(web) && !manualOpen) {
