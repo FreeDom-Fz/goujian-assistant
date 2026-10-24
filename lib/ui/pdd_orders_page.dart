@@ -28,8 +28,43 @@ class _PddOrdersPageState extends State<PddOrdersPage> {
   final ScrollController _scroll = ScrollController();
   String? _nextOffset;
   Object? _error;
-  bool _loading = true, _loadingMore = false;
-  bool _started = false;
+  bool _loading = false, _loadingMore = false;
+  PddOrderType _type = PddOrderType.all;
+  _ReceiveGroup _subGroup = _ReceiveGroup.all;
+
+  /// "待收货"二级细分（App 端为本地过滤，2026-10-24 第二轮抓包确认：
+  /// 网页版 unreceived 数据 = App"待收货"全部订单；"已签收"订单
+  /// order_status_prompt 以"已签收"开头。待取件/派件中/运输中当前账号
+  /// 无订单，按关键词近似分组，规则待有对应状态订单后补验）。
+  static _ReceiveGroup _classifyReceived(PddOrder order) {
+    final prompt = order.statusPrompt;
+    if (prompt.contains('已签收')) return _ReceiveGroup.signed;
+    if (prompt.contains('取件')) return _ReceiveGroup.pickup;
+    if (prompt.contains('派件')) return _ReceiveGroup.delivering;
+    if (prompt.contains('运输中') || prompt.contains('在途')) {
+      return _ReceiveGroup.transporting;
+    }
+    return _ReceiveGroup.other;
+  }
+
+  List<PddOrder> get _visible {
+    if (_type != PddOrderType.unreceived || _subGroup == _ReceiveGroup.all) {
+      return _orders;
+    }
+    return [
+      for (final order in _orders)
+        if (_classifyReceived(order) == _subGroup) order,
+    ];
+  }
+
+  int _count(_ReceiveGroup group) {
+    if (group == _ReceiveGroup.all) return _orders.length;
+    var total = 0;
+    for (final order in _orders) {
+      if (_classifyReceived(order) == group) total++;
+    }
+    return total;
+  }
 
   @override
   void initState() {
@@ -52,7 +87,8 @@ class _PddOrdersPageState extends State<PddOrdersPage> {
     if (_scroll.position.extentAfter < 400) _loadMore();
   }
 
-  Future<void> _load() async {
+  Future<void> _load([PddOrderType? type]) async {
+    final target = type ?? _type;
     final credential = _credential;
     if (credential == null || !LoginCredentials.stored(_platform, credential)) {
       if (mounted) {
@@ -63,14 +99,16 @@ class _PddOrdersPageState extends State<PddOrdersPage> {
       }
       return;
     }
-    if (_started) return;
-    _started = true;
+    if (_loading) return;
     setState(() {
       _loading = true;
       _error = null;
+      _orders.clear();
+      _nextOffset = null;
+      _type = target;
     });
     try {
-      final result = await _api.orders(credential);
+      final result = await _api.orders(credential, type: target);
       if (mounted) {
         setState(() {
           _orders
@@ -87,8 +125,6 @@ class _PddOrdersPageState extends State<PddOrdersPage> {
           _error = error;
         });
       }
-    } finally {
-      _started = false;
     }
   }
 
@@ -98,7 +134,11 @@ class _PddOrdersPageState extends State<PddOrdersPage> {
     if (credential == null) return;
     setState(() => _loadingMore = true);
     try {
-      final result = await _api.orders(credential, offset: _nextOffset);
+      final result = await _api.orders(
+        credential,
+        type: _type,
+        offset: _nextOffset,
+      );
       if (mounted) {
         setState(() {
           _orders.addAll(result.orders);
@@ -138,8 +178,101 @@ class _PddOrdersPageState extends State<PddOrdersPage> {
         const SizedBox(width: 4),
       ],
     ),
-    body: _body(context),
+    body: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _typeBar(context),
+        if (_type == PddOrderType.unreceived) _subBar(context),
+        Expanded(child: _body(context)),
+      ],
+    ),
   );
+
+  Widget _typeBar(BuildContext context) {
+    final primary = Theme.of(context).primaryColor;
+    return Container(
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: Theme.of(context).dividerColor.withValues(alpha: .4),
+          ),
+        ),
+      ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(
+          children: [
+            for (final type in PddOrderType.values) ...[
+              _typeTab(context, type, primary),
+              const SizedBox(width: 26),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _typeTab(BuildContext context, PddOrderType type, Color primary) {
+    final selected = _type == type;
+    return InkWell(
+      onTap: _loading ? null : () => _load(type),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 13),
+        child: Text(
+          type.label,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+            color: selected ? primary : secondary(context),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _subBar(BuildContext context) {
+    final primary = Theme.of(context).primaryColor;
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 8),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            for (final group in _ReceiveGroup.values) ...[
+              _subTab(context, group, primary),
+              const SizedBox(width: 10),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _subTab(BuildContext context, _ReceiveGroup group, Color primary) {
+    final selected = _subGroup == group;
+    return InkWell(
+      onTap: () => setState(() => _subGroup = group),
+      borderRadius: BorderRadius.circular(999),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+        decoration: BoxDecoration(
+          color: selected
+              ? primary.withValues(alpha: .12)
+              : Theme.of(context).dividerColor.withValues(alpha: .35),
+          borderRadius: BorderRadius.circular(999),
+        ),
+        child: Text(
+          '${group.label} ${_count(group)}',
+          style: TextStyle(
+            fontSize: 12.5,
+            fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+            color: selected ? primary : secondary(context),
+          ),
+        ),
+      ),
+    );
+  }
 
   Widget _body(BuildContext context) {
     if (_loading) return const Center(child: CircularProgressIndicator());
@@ -166,10 +299,12 @@ class _PddOrdersPageState extends State<PddOrdersPage> {
         ),
       );
     }
-    if (_orders.isEmpty) {
+    if (_visible.isEmpty) {
       return Center(
         child: Text(
-          '暂无订单',
+          _type == PddOrderType.unreceived && _subGroup != _ReceiveGroup.all
+              ? '该细分暂无订单'
+              : '暂无订单',
           style: TextStyle(color: secondary(context)),
         ),
       );
@@ -180,10 +315,10 @@ class _PddOrdersPageState extends State<PddOrdersPage> {
         controller: _scroll,
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
-        itemCount: _orders.length + (_loadingMore ? 1 : 0),
+        itemCount: _visible.length + (_loadingMore ? 1 : 0),
         separatorBuilder: (_, _) => const SizedBox(height: 10),
         itemBuilder: (context, index) {
-          if (index >= _orders.length) {
+          if (index >= _visible.length) {
             return const Padding(
               padding: EdgeInsets.symmetric(vertical: 12),
               child: Center(
@@ -195,14 +330,28 @@ class _PddOrdersPageState extends State<PddOrdersPage> {
               ),
             );
           }
+          final order = _visible[index];
           return _OrderCard(
-            order: _orders[index],
-            onExpress: () => _openExpress(_orders[index]),
+            order: order,
+            onExpress: () => _openExpress(order),
           );
         },
       ),
     );
   }
+}
+
+/// "待收货"二级细分（App 端"全部/已签收/待取件/派件中/运输中/其他"）。
+enum _ReceiveGroup {
+  all('全部'),
+  signed('已签收'),
+  pickup('待取件'),
+  delivering('派件中'),
+  transporting('运输中'),
+  other('其他');
+
+  const _ReceiveGroup(this.label);
+  final String label;
 }
 
 Color _statusColor(String hex, Color fallback) {

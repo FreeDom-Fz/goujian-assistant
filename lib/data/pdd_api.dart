@@ -8,6 +8,24 @@ import 'http.dart';
 /// 链路：以存储的 Cookie（Credential.primary）请求移动端订单接口，
 /// 返回订单列表与 offset 游标用于翻页。请求体不含 anti_content 签名，
 /// 2026-10-24 实测接口不强制校验该字段（对照实验：带/不带均正常返回）。
+/// 订单分类标签（order_list_v4 请求体 type 字段，2026-10-24 第二轮抓包确认）。
+///
+/// 网页版与 App 标签对照：待分享=拼团中、待发货=打包中；
+/// 切换分类时服务端发新请求，以请求体 type 字段为准（URL 的 type 参数
+/// 与请求体并非严格一一对应）。
+enum PddOrderType {
+  all('all', '全部'),
+  unpaidV2('unpaidV2', '待付款'),
+  grouping('grouping', '拼团中'),
+  unshipping('unshipping', '打包中'),
+  unreceived('unreceived', '待收货'),
+  unrated('unrated', '评价');
+
+  const PddOrderType(this.value, this.label);
+  final String value;
+  final String label;
+}
+
 class PddApi {
   const PddApi(this.http);
   final JsonHttp http;
@@ -37,6 +55,7 @@ class PddApi {
 
   Future<PddOrdersResult> orders(
     Credential credential, {
+    PddOrderType type = PddOrderType.all,
     String? offset,
     int size = 10,
   }) async {
@@ -46,7 +65,7 @@ class PddApi {
     final result = await http.postJsonRead(
       '$base/proxy/api/api/aristotle/order_list_v4?pdduid=$pdduid',
       {
-        'type': 'all',
+        'type': type.value,
         'page': 1,
         'origin_host_name': 'mobile.yangkeduo.com',
         'scene': 'order_list_h5',
@@ -63,6 +82,14 @@ class PddApi {
         'Cookie': cookie,
       },
     );
+    // 424/401/403 等为拼多多会话过期或风控拒绝（2026-10-24 实测：
+    // 重新网页登录后恢复正常），给出可操作提示而非技术错误。
+    if (result.status == 401 ||
+        result.status == 403 ||
+        result.status == 424 ||
+        result.status == 450) {
+      throw const AppException('登录已过期或会话失效，请返回物流页重新登录');
+    }
     require(result.successful, '订单接口返回 HTTP ${result.status}');
     final json = result.json;
     if (json.integer('error_code') != 0) {
