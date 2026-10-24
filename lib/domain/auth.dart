@@ -200,10 +200,17 @@ class WebLoginTarget {
 /// 登录方式为手机号+验证码或扫码，无滑块验证。登录态保存在
 /// yangkeduo.com / pinduoduo.com 域 Cookie 中（PDDAccessToken、
 /// pdd_user_id 等），故 Cookie 白名单覆盖两个域。
+///
+/// userAgent 传空字符串：webSettings 层会把空 UA 交给 WebView2 原样处理
+/// （C++ 端 userAgent 为空时跳过 put_UserAgent），即使用 WebView2 原生
+/// Edge UA。伪造的 Chrome/147 与 WebView2 内核 TLS 指纹不一致，拼多多
+/// 会按一致性风控直接断开连接（登录页曾返回连接被中止），原生 UA 可
+/// 规避该检测。
 final pddLoginTarget = WebLoginTarget(
   CloudPlatform.pdd,
   'https://mobile.yangkeduo.com/login.html',
   ['yangkeduo.com', 'pinduoduo.com'],
+  userAgent: '',
 );
 
 class LoginPollingPolicy {

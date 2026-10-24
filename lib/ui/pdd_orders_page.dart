@@ -57,7 +57,7 @@ class _PddOrdersPageState extends State<PddOrdersPage> {
             initialUrlRequest: URLRequest(
               url: WebUri('https://mobile.yangkeduo.com/orders.html'),
             ),
-            initialSettings: webSettings(),
+            initialSettings: webSettings(userAgent: ''),
             onWebViewCreated: (web) async {
               try {
                 await web.evaluateJavascript(source: desktopLoginViewportScript);
