@@ -347,23 +347,20 @@ class _OrderCard extends StatelessWidget {
               ),
               const SizedBox(height: 8),
             ],
-            Wrap(
-              spacing: 8,
-              crossAxisAlignment: WrapCrossAlignment.center,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                if (order.mallName.isNotEmpty)
-                  Text(
-                    order.mallName,
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: secondary(context),
-                    ),
+                Expanded(
+                  child: Text(
+                    [
+                      if (order.mallName.isNotEmpty) order.mallName,
+                      if (order.orderTimeText.isNotEmpty) order.orderTimeText,
+                    ].join(' · '),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 11, color: secondary(context)),
                   ),
-                Text(
-                  order.orderTimeText,
-                  style: TextStyle(fontSize: 11, color: secondary(context)),
                 ),
-                const Spacer(),
                 if (order.expressUrl != null)
                   FilledButton.tonalIcon(
                     onPressed: onExpress,
