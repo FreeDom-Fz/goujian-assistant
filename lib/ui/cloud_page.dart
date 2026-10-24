@@ -65,6 +65,61 @@ class _CloudPageState extends State<CloudPage> {
     }
   }
 
+  /// 手动粘贴 Cookie 登录（网页登录在部分环境被拼多多拦截时使用）。
+  Future<void> _manualLogin() async {
+    final controller = TextEditingController();
+    final raw = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('粘贴拼多多 Cookie'),
+        content: SizedBox(
+          width: 460,
+          child: TextField(
+            controller: controller,
+            autofocus: true,
+            maxLines: 8,
+            decoration: const InputDecoration(
+              hintText:
+                  '在浏览器登录拼多多后复制完整 Cookie 粘贴到这里\n（DevTools → Network → 任一请求头里的 Cookie，或 Application → Cookies 全选复制）',
+              border: OutlineInputBorder(),
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('取消'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, controller.text),
+            child: const Text('登录'),
+          ),
+        ],
+      ),
+    );
+    final value = raw?.trim() ?? '';
+    if (value.isEmpty) return;
+    try {
+      final credential = LoginCredentials.candidate(
+        _platform,
+        value,
+        widget.services.vault.credential(_platform),
+      );
+      final pairs = LoginCredentials.cookiePairs(credential.primary);
+      if (!(pairs.containsKey('PDDAccessToken') ||
+          pairs.containsKey('pdd_user_id') ||
+          pairs.containsKey('pdd_user_uin'))) {
+        message(context, 'Cookie 缺少拼多多会话字段（PDDAccessToken / pdd_user_id / pdd_user_uin），请复制完整 Cookie');
+        return;
+      }
+      await widget.services.vault.putCredential(_platform, credential);
+      if (mounted) setState(() {});
+      if (mounted) message(context, '拼多多登录成功，登录信息已保存');
+    } catch (error) {
+      if (mounted) message(context, errorText(error));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final credential = widget.services.vault.credential(_platform);
@@ -149,8 +204,14 @@ class _CloudPageState extends State<CloudPage> {
                   icon: const Icon(CupertinoIcons.cart),
                   label: const Text('打开订单页'),
                 )
-              else
+              else ...[
                 FilledButton.icon(
+                  onPressed: _manualLogin,
+                  icon: const Icon(CupertinoIcons.doc_text),
+                  label: const Text('手动粘贴 Cookie 登录'),
+                ),
+                const SizedBox(height: 8),
+                OutlinedButton.icon(
                   onPressed: _loggingIn ? null : _login,
                   icon: _loggingIn
                       ? const SizedBox(
@@ -159,8 +220,9 @@ class _CloudPageState extends State<CloudPage> {
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : const Icon(CupertinoIcons.person_crop_circle),
-                  label: Text(_loggingIn ? '登录中…' : '登录拼多多'),
+                  label: Text(_loggingIn ? '登录中…' : '网页登录（部分环境不可用）'),
                 ),
+              ],
               const SizedBox(height: 12),
               OutlinedButton.icon(
                 onPressed: () => Navigator.push<void>(
