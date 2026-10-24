@@ -24,9 +24,11 @@ InAppWebViewSettings webSettings({
   loadWithOverviewMode: desktopMode,
   mixedContentMode: MixedContentMode.MIXED_CONTENT_NEVER_ALLOW,
   thirdPartyCookiesEnabled: true,
-  // WebView2 requires authorization windows to share the opener's InPrivate
-  // profile. Android popups must avoid clearing the shared cookie jar again.
-  incognito: !isPopup || defaultTargetPlatform == TargetPlatform.windows,
+  // 原版在 Windows 恒为 InPrivate（incognito）模式。拼多多对无痕/临时
+  // profile 会话有区别对待的嫌疑（系统 Edge 非无痕可正常加载登录页，
+  // 应用内无痕 WebView 连接被中止 code 9），统一改为普通会话；
+  // 登录前 _forgetBrowserCookies 仍会清空 Cookie，不依赖 profile 残留。
+  incognito: false,
   cacheEnabled: false,
   saveFormData: false,
   supportZoom: true,
