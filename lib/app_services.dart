@@ -166,7 +166,9 @@ class AppServices extends ChangeNotifier {
               'goujian_webview',
             ),
             additionalBrowserArguments:
-                '--disable-quic --disable-features=UseDnsHttpsSvcbAlpn,UseDnsHttpsSvcb',
+                '--disable-quic --disable-features=UseDnsHttpsSvcbAlpn,UseDnsHttpsSvcb '
+                    '--host-resolver-rules="MAP mobile.yangkeduo.com 81.69.104.33, '
+                    'MAP www.pinduoduo.com 150.158.224.195, MAP yangkeduo.com 81.69.104.33"',
           ),
         );
         return _webEnvironment;
