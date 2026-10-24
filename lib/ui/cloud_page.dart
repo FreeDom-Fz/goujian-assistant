@@ -2,11 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import '../app_services.dart';
+import '../data/edge_login.dart';
 import '../domain/auth.dart';
 import '../domain/cloud_list_preferences.dart';
 import '../domain/models.dart';
 import 'common.dart';
-import 'login_page.dart';
 import 'pdd_orders_page.dart';
 
 /// 站点列表。当前为拼多多单站点；后续站点接入时在此追加。
@@ -55,19 +55,8 @@ class _CloudPageState extends State<CloudPage> {
   static const _platform = CloudPlatform.pdd;
   bool _loggingIn = false;
 
-  Future<void> _login() async {
-    if (_loggingIn) return;
-    setState(() => _loggingIn = true);
-    try {
-      await openLogin(context, widget.services, pddLoginTarget);
-    } finally {
-      if (mounted) setState(() => _loggingIn = false);
-    }
-  }
-
   /// 手动粘贴 Cookie 登录（网页登录在部分环境被拼多多拦截时使用）。
-  Future<void> _manualLogin() async {
-    final controller = TextEditingController();
+  Future<void> _manualLogin() async {    final controller = TextEditingController();
     final raw = await showDialog<String>(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -119,6 +108,50 @@ class _CloudPageState extends State<CloudPage> {
       if (mounted) message(context, '拼多多登录成功，登录信息已保存');
     } catch (error) {
       if (mounted) message(context, errorText(error));
+    }
+  }
+
+  /// 退出拼多多登录，清除已保存的会话。
+  Future<void> _logout() async {
+    await widget.services.vault.removeCredential(_platform);
+    if (mounted) setState(() {});
+  }
+
+  /// 网页登录：拉起系统 Edge（CDP 接管），登录后自动读取 Cookie。
+  ///
+  /// 应用内 WebView2 加载拼多多登录页恒失败（code 9），系统 Edge 正常，
+  /// 因此登录交给真实 Edge 完成，应用通过 CDP 轮询会话字段并保存。
+  Future<void> _webLoginEdge() async {
+    if (_loggingIn) return;
+    setState(() => _loggingIn = true);
+    final bridge = EdgeLogin();
+    try {
+      await bridge.start(pddLoginTarget.url);
+      if (mounted) {
+        message(context, '已在浏览器打开拼多多登录页，登录成功后会自动同步，请勿关闭该浏览器窗口');
+      }
+      final cookie = await bridge.waitForPddCookies(
+        onHint: (hint) {
+          if (mounted) message(context, hint);
+        },
+      );
+      if (cookie == null || cookie.isEmpty) {
+        if (mounted) message(context, '等待登录超时（5 分钟），未获取到登录信息');
+        return;
+      }
+      final credential = LoginCredentials.candidate(
+        _platform,
+        cookie,
+        widget.services.vault.credential(_platform),
+      );
+      await widget.services.vault.putCredential(_platform, credential);
+      if (mounted) setState(() {});
+      if (mounted) message(context, '拼多多登录成功，登录信息已保存');
+    } catch (error) {
+      if (mounted) message(context, errorText(error));
+    } finally {
+      await bridge.close();
+      if (mounted) setState(() => _loggingIn = false);
     }
   }
 
@@ -191,6 +224,16 @@ class _CloudPageState extends State<CloudPage> {
                           ),
                         ),
                       ),
+                      if (loggedIn)
+                        IconButton(
+                          tooltip: '退出登录',
+                          visualDensity: VisualDensity.compact,
+                          onPressed: _logout,
+                          icon: const Icon(
+                            CupertinoIcons.delete_solid,
+                            size: 15,
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -214,7 +257,7 @@ class _CloudPageState extends State<CloudPage> {
                 ),
                 const SizedBox(height: 8),
                 OutlinedButton.icon(
-                  onPressed: _loggingIn ? null : _login,
+                  onPressed: _loggingIn ? null : _webLoginEdge,
                   icon: _loggingIn
                       ? const SizedBox(
                           width: 16,
@@ -222,7 +265,7 @@ class _CloudPageState extends State<CloudPage> {
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : const Icon(CupertinoIcons.person_crop_circle),
-                  label: Text(_loggingIn ? '登录中…' : '网页登录（部分环境不可用）'),
+                  label: Text(_loggingIn ? '登录中…' : '网页登录'),
                 ),
               ],
               const SizedBox(height: 12),
