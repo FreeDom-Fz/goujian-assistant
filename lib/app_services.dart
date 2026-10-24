@@ -157,6 +157,12 @@ class AppServices extends ChangeNotifier {
         _webEnvironment = await WebViewEnvironment.create(
           settings: WebViewEnvironmentSettings(
             userDataFolder: p.join(dataDirectory.path, 'webview'),
+            // 拼多多登录页在 WebView2 下曾出现连接被中止（code 9），而系统
+            // Edge（同内核同网络）可正常加载：禁用 QUIC（UDP 路径）与
+            // DNS HTTPS/SVCB 记录（本机 DNS 解析异常时可能指向错误端点），
+            // 强制走 TCP/HTTP2 与常规 A/AAAA 解析。
+            additionalBrowserArguments:
+                '--disable-quic --disable-features=UseDnsHttpsSvcbAlpn,UseDnsHttpsSvcb',
           ),
         );
         return _webEnvironment;
