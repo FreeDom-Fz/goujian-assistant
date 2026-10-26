@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 import 'core/json.dart';
 import 'diagnostics/app_log.dart';
 import 'data/backgrounds.dart';
@@ -66,9 +65,11 @@ class AppServices extends ChangeNotifier {
       cache = Directory(paths.str('cache'));
     } else {
       require(Platform.isWindows, '当前版本支持 Android 和 Windows');
-      data = Directory(
-        p.join((await getApplicationSupportDirectory()).path, 'GoujianAssistant'),
-      );
+      // 购件助手使用独立数据目录（不随文析助手的 getApplicationSupportDirectory
+      // 根路径），避免与文析助手共用 com.asterlink\文析助手 根目录，
+      // 保证两个应用可同时运行。
+      final appData = Platform.environment['APPDATA'] ?? Directory.systemTemp.path;
+      data = Directory(p.join(appData, 'GoujianAssistant'));
       cache = Directory(p.join(data.path, 'downloads'));
     }
     await data.create(recursive: true);
