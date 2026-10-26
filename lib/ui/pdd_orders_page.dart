@@ -394,6 +394,7 @@ class _PddOrdersPageState extends State<PddOrdersPage> {
             child: _OrderCard(
               order: order,
               onExpress: () => _openExpress(order),
+              logisticsStatus: _logisticsStatus[order.orderSn],
             ),
           );
         },
@@ -423,9 +424,24 @@ Color _statusColor(String hex, Color fallback) {
 }
 
 class _OrderCard extends StatelessWidget {
-  const _OrderCard({required this.order, required this.onExpress});
+  const _OrderCard({required this.order, required this.onExpress, this.logisticsStatus});
   final PddOrder order;
   final VoidCallback onExpress;
+  final String? logisticsStatus;
+
+  /// 根据物流状态码映射细分标签（替代笼统的"待收货"）。
+  String get _statusLabel {
+    final code = logisticsStatus ?? '';
+    if (code == 'SIGN') return '已签收';
+    if (code == 'DEPARTURE' || code.startsWith('DEPARTURE') || code.startsWith('ARRIVAL')) {
+      return '运输中';
+    }
+    if (code == 'GOT') return '待揽收';
+    if (code.startsWith('SEND')) return '派送中';
+    if (code.startsWith('IN_CABINET') || code.startsWith('OUT_CABINET')) return '待取件';
+    // 非待收货类订单（待付款/拼团中/已评价等）直接用原 statusPrompt
+    return order.statusPrompt;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -444,7 +460,7 @@ class _OrderCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    order.statusPrompt,
+                    _statusLabel,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
