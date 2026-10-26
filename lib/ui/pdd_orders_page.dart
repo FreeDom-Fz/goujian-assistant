@@ -146,6 +146,7 @@ class _PddOrdersPageState extends State<PddOrdersPage> {
       _orders.clear();
       _nextOffset = null;
       _type = target;
+      _subGroup = _ReceiveGroup.all;
     });
     try {
       final result = await _api.orders(credential, type: target);
