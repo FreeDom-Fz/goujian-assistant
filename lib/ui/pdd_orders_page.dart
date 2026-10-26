@@ -522,12 +522,6 @@ class _OrderCard extends StatelessWidget {
                     style: TextStyle(fontSize: 11, color: secondary(context)),
                   ),
                 ),
-                if (order.expressUrl != null)
-                  FilledButton.tonalIcon(
-                    onPressed: onExpress,
-                    icon: const Icon(CupertinoIcons.location, size: 15),
-                    label: const Text('查看物流'),
-                  ),
               ],
             ),
             const SizedBox(height: 6),

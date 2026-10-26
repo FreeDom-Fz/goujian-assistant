@@ -189,9 +189,24 @@ class PddApi {
     require(result.successful, '物流轨迹 HTTP ${result.status}');
     final html = result.body;
 
-    final rawMatch = RegExp(r'window\.rawData\s*=\s*(\{.+?\});\s*</script>', dotAll: true).firstMatch(html);
-    if (rawMatch == null) throw AppException('未找到物流轨迹数据');
-    final raw = jsonDecode(rawMatch.group(1)!) as Map<String, dynamic>;
+    // window.rawData 后面是一个大 JSON，一直到 </script> 结束；用贪婪匹配
+    // 到 </script>，避免被 JSON 内部的 }; 提前截断。
+    final rawMatch = RegExp(
+      r'window\.rawData\s*=\s*(\{.*\})\s*;?\s*</script>',
+      dotAll: true,
+    ).firstMatch(html);
+    if (rawMatch == null) {
+      // 兜底：直接取 window.rawData= 到行尾
+      final m2 = RegExp(r'window\.rawData\s*=\s*(\{.+)').firstMatch(html);
+      if (m2 == null) throw AppException('未找到物流轨迹数据');
+      throw AppException('物流轨迹数据格式异常');
+    }
+    Map<String, dynamic> raw;
+    try {
+      raw = jsonDecode(rawMatch.group(1)!) as Map<String, dynamic>;
+    } catch (e) {
+      throw AppException('轨迹 JSON 解析失败: $e');
+    }
     final shipping = raw['store']?['traceData']?['shipping'] as Map<String, dynamic>? ?? {};
 
     final traces = [
