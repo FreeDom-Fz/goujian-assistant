@@ -25,6 +25,7 @@ class EdgeLogin {
   Directory? _profile;
   int? _port;
   int _nextId = 1;
+  bool _exited = false;
 
   static const _candidates = [
     r'C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe',
@@ -77,6 +78,8 @@ class EdgeLogin {
         url,
       ],
     );
+    _exited = false;
+    _process!.exitCode.then((_) => _exited = true);
     // 等待 CDP 端口就绪。
     final deadline = DateTime.now().add(const Duration(seconds: 25));
     String? wsUrl;
@@ -165,7 +168,8 @@ class EdgeLogin {
   }
 
   /// 轮询拼多多会话 Cookie：出现 PDDAccessToken / pdd_user_id /
-  /// pdd_user_uin 即视为登录成功，返回完整 Cookie 串；超时返回 null。
+  /// pdd_user_uin 即视为登录成功，返回完整 Cookie 串；
+  /// Edge 被用户关闭（进程退出）或超时返回 null。
   Future<String?> waitForPddCookies({
     Duration timeout = const Duration(minutes: 5),
     void Function(String hint)? onHint,
@@ -173,6 +177,8 @@ class EdgeLogin {
     final deadline = DateTime.now().add(timeout);
     onHint?.call('请在刚弹出的浏览器中登录拼多多，登录成功后无需操作');
     while (DateTime.now().isBefore(deadline)) {
+      // Edge 进程已退出（用户主动关闭窗口）→ 立即结束等待。
+      if (_exited) return null;
       try {
         final cookies = await _pddCookies();
         final names = cookies.map((c) => c.str('name')).toSet();
@@ -191,6 +197,7 @@ class EdgeLogin {
 
   /// 关闭 Edge 并清理临时 profile。
   Future<void> close() async {
+    _exited = true;
     final ws = _ws;
     _ws = null;
     try {
