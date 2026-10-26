@@ -63,15 +63,29 @@ class _MinePageState extends State<MinePage> {
             padding: const EdgeInsets.all(20),
             children: [
               const SizedBox(height: 24),
-              Center(
-                child: Image.asset('assets/icons/app.png', width: 72, height: 72),
-              ),
-              const SizedBox(height: 14),
-              const Center(
-                child: Text(
-                  '购件助手',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                ),
+              // 应用信息：图标 + 名称 + 版本号（参考文析助手"我的"页顶部布局）
+              Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.asset('assets/icons/app.png', width: 56, height: 56),
+                  ),
+                  const SizedBox(width: 14),
+                  const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '购件助手',
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+                      ),
+                      SizedBox(height: 3),
+                      Text(
+                        '版本 1.0.0',
+                        style: TextStyle(fontSize: 12, color: Color(0xff8e8e93)),
+                      ),
+                    ],
+                  ),
+                ],
               ),
               const SizedBox(height: 32),
               // 外观与主题
