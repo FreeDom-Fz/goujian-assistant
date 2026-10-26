@@ -75,6 +75,20 @@ class _PddOrderDetailPageState extends State<PddOrderDetailPage> {
   Widget _buildContent(BuildContext context, PddOrderDetail detail) {
     final goods = widget.order.goods.isNotEmpty ? widget.order.goods.first : null;
     final primary = themeAccent(context);
+    // 优先用订单列表已有的 trackingNumber / expressUrl，HTML 解析作补充。
+    final trackingNumber = widget.order.trackingNumber.isNotEmpty
+        ? widget.order.trackingNumber
+        : detail.trackingNumber;
+    // 从 expressUrl（order_buttons 里"查看物流"链接）解析 query 参数。
+    String? shippingIdParam, goodsIdParam;
+    final expressUrl = widget.order.expressUrl;
+    if (expressUrl != null) {
+      final uri = Uri.tryParse(expressUrl);
+      if (uri != null) {
+        shippingIdParam = uri.queryParameters['shipping_id'];
+        goodsIdParam = uri.queryParameters['goods_id'];
+      }
+    }
 
     return ListView(
       padding: const EdgeInsets.all(12),
@@ -185,10 +199,10 @@ class _PddOrderDetailPageState extends State<PddOrderDetailPage> {
           children: [
             Expanded(
               child: OutlinedButton.icon(
-                onPressed: detail.trackingNumber.isEmpty
+                onPressed: trackingNumber.isEmpty
                     ? null
                     : () {
-                        Clipboard.setData(ClipboardData(text: detail.trackingNumber));
+                        Clipboard.setData(ClipboardData(text: trackingNumber));
                         message(context, '快递单号已复制');
                       },
                 icon: const Icon(CupertinoIcons.doc_on_doc, size: 18),
@@ -198,7 +212,7 @@ class _PddOrderDetailPageState extends State<PddOrderDetailPage> {
             const SizedBox(width: 12),
             Expanded(
               child: FilledButton.icon(
-                onPressed: detail.trackingNumber.isEmpty
+                onPressed: trackingNumber.isEmpty || expressUrl == null
                     ? null
                     : () {
                         Navigator.push(
@@ -207,9 +221,9 @@ class _PddOrderDetailPageState extends State<PddOrderDetailPage> {
                             builder: (_) => PddOrderTrackPage(
                               services: widget.services,
                               order: widget.order,
-                              trackingNumber: detail.trackingNumber,
-                              shippingId: 115,
-                              goodsId: goods?.goodsId ?? '',
+                              trackingNumber: trackingNumber,
+                              shippingId: int.tryParse(shippingIdParam ?? '') ?? 115,
+                              goodsId: goodsIdParam ?? goods?.goodsId ?? '',
                             ),
                           ),
                         );

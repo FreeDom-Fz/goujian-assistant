@@ -57,6 +57,7 @@ class CloudPage extends StatefulWidget {
 class _CloudPageState extends State<CloudPage> {
   static const _platform = CloudPlatform.pdd;
   bool _loggingIn = false;
+  bool _sessionExpired = false;
 
   /// 手动粘贴 Cookie 登录（网页登录在部分环境被拼多多拦截时使用）。
   Future<void> _manualLogin() async {    final controller = TextEditingController();
@@ -143,9 +144,15 @@ class _CloudPageState extends State<CloudPage> {
     try {
       final api = PddApi(widget.services.http);
       await api.orders(credential, type: PddOrderType.all);
-      if (mounted) message(context, '登录状态正常');
+      if (mounted) {
+        setState(() => _sessionExpired = false);
+        message(context, '登录状态正常');
+      }
     } catch (error) {
-      if (mounted) message(context, '登录已失效，请重新登录');
+      if (mounted) {
+        setState(() => _sessionExpired = true);
+        message(context, '登录已失效，请重新登录');
+      }
     }
   }
 
@@ -279,7 +286,8 @@ class _CloudPageState extends State<CloudPage> {
   @override
   Widget build(BuildContext context) {
     final credential = widget.services.vault.credential(_platform);
-    final loggedIn = LoginCredentials.stored(_platform, credential);
+    final stored = LoginCredentials.stored(_platform, credential);
+    final loggedIn = stored && !_sessionExpired;
     return SafeArea(
       top: false,
       child: Center(
@@ -313,9 +321,11 @@ class _CloudPageState extends State<CloudPage> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              loggedIn
-                                  ? '已登录，点击卡片查看物流'
-                                  : '未登录，点击卡片登录',
+                              _sessionExpired
+                                  ? '登录已过期，请重新登录'
+                                  : loggedIn
+                                      ? '已登录，点击卡片查看物流'
+                                      : '未登录，点击卡片登录',
                               style: TextStyle(
                                 fontSize: 12.5,
                                 color: secondary(context),
@@ -330,21 +340,29 @@ class _CloudPageState extends State<CloudPage> {
                           vertical: 3,
                         ),
                         decoration: BoxDecoration(
-                          color: loggedIn
-                              ? const Color(0x1A34C759)
-                              : Theme.of(context).disabledColor.withValues(
-                                  alpha: .12,
-                                ),
+                          color: _sessionExpired
+                              ? const Color(0x1AFE3B30)
+                              : loggedIn
+                                  ? const Color(0x1A34C759)
+                                  : Theme.of(context).disabledColor.withValues(
+                                      alpha: .12,
+                                    ),
                           borderRadius: BorderRadius.circular(999),
                         ),
                         child: Text(
-                          loggedIn ? '已登录' : '未登录',
+                          _sessionExpired
+                              ? '已过期'
+                              : loggedIn
+                                  ? '已登录'
+                                  : '未登录',
                           style: TextStyle(
                             fontSize: 11.5,
                             fontWeight: FontWeight.w600,
-                            color: loggedIn
-                                ? const Color(0xFF2E9E44)
-                                : Theme.of(context).disabledColor,
+                            color: _sessionExpired
+                                ? const Color(0xFFE02E24)
+                                : loggedIn
+                                    ? const Color(0xFF2E9E44)
+                                    : Theme.of(context).disabledColor,
                           ),
                         ),
                       ),
