@@ -1,6 +1,7 @@
 import '../core/json.dart';
 import '../domain/auth.dart';
 import '../domain/models.dart';
+import 'dart:convert';
 import 'http.dart';
 
 /// 拼多多订单列表接口 order_list_v4 的数据层（#6）。
@@ -105,6 +106,105 @@ class PddApi {
     final next = hasMore ? orders.last.offset : null;
     return PddOrdersResult(orders, next);
   }
+
+  /// GET order.html 订单详情页（SSR），从 HTML 里提取关键信息。
+  Future<PddOrderDetail> fetchOrderDetail(
+    Credential credential,
+    String orderSn,
+  ) async {
+    final cookie = credential.primary;
+    final result = await http.get(
+      '$base/order.html?order_sn=$orderSn&page_from=1&main_orders=1',
+      {
+        'User-Agent': userAgent,
+        'Referer': _referer,
+        'Cookie': cookie,
+      },
+    );
+    if (result.status == 401 || result.status == 403 || result.status == 424) {
+      throw const AppException('登录已过期，请返回物流页重新登录');
+    }
+    require(result.successful, '订单详情 HTTP ${result.status}');
+    final html = result.body;
+
+    // 提取收货信息 aria-label
+    final addressMatch = RegExp(r'收货人信息[:：]\s*([^"<]+)').firstMatch(html);
+    final address = addressMatch?.group(1)?.trim() ?? '';
+
+    // 提取 window.rawData 里的 JSON
+    final rawMatch = RegExp(r'window\.rawData\s*=\s*(\{.+?\});\s*</script>', dotAll: true).firstMatch(html);
+    Map<String, dynamic>? raw;
+    if (rawMatch != null) {
+      try {
+        raw = jsonDecode(rawMatch.group(1)!) as Map<String, dynamic>;
+      } catch (_) {}
+    }
+
+    String pick(String key) {
+      final m = RegExp('"$key"\\s*[:：]\\s*"([^"]*)"').firstMatch(html);
+      return m?.group(1) ?? '';
+    }
+
+    return PddOrderDetail(
+      orderSn: orderSn,
+      address: address,
+      shippingName: pick('物流公司'),
+      trackingNumber: pick('快递单号'),
+      orderTime: pick('下单时间'),
+      shipTime: pick('发货时间'),
+      payMethod: pick('支付方式'),
+      raw: raw,
+    );
+  }
+
+  /// GET goods_express.html 物流轨迹页（SSR），解析 window.rawData.store.traceData.shipping。
+  Future<PddOrderTrack> fetchOrderTrack(
+    Credential credential, {
+    required String orderSn,
+    required String trackingNumber,
+    required int shippingId,
+    required String goodsId,
+    String? thumbUrl,
+  }) async {
+    final cookie = credential.primary;
+    final params = [
+      'tracking_number=$trackingNumber',
+      'shipping_id=$shippingId',
+      'hide_address=1',
+      'order_sn=$orderSn',
+      'goods_id=$goodsId',
+      if (thumbUrl != null) 'thumb_url=${Uri.encodeComponent(thumbUrl)}',
+    ].join('&');
+    final result = await http.get(
+      '$base/goods_express.html?$params',
+      {
+        'User-Agent': userAgent,
+        'Referer': '$base/order.html?order_sn=$orderSn',
+        'Cookie': cookie,
+      },
+    );
+    if (result.status == 401 || result.status == 403 || result.status == 424) {
+      throw const AppException('登录已过期，请返回物流页重新登录');
+    }
+    require(result.successful, '物流轨迹 HTTP ${result.status}');
+    final html = result.body;
+
+    final rawMatch = RegExp(r'window\.rawData\s*=\s*(\{.+?\});\s*</script>', dotAll: true).firstMatch(html);
+    if (rawMatch == null) throw AppException('未找到物流轨迹数据');
+    final raw = jsonDecode(rawMatch.group(1)!) as Map<String, dynamic>;
+    final shipping = raw['store']?['traceData']?['shipping'] as Map<String, dynamic>? ?? {};
+
+    final traces = [
+      for (final t in (shipping['traces'] as List? ?? []))
+        PddTraceNode.fromJson(asJson(t)),
+    ];
+
+    return PddOrderTrack(
+      shippingName: shipping['shippingName']?.toString() ?? '',
+      trackingNumber: shipping['trackingNumber']?.toString() ?? '',
+      traces: traces,
+    );
+  }
 }
 
 /// 订单列表分页结果。
@@ -182,6 +282,7 @@ class PddGoods {
     required this.number,
     required this.thumbUrl,
     required this.spec,
+    required this.goodsId,
   });
 
   factory PddGoods.fromJson(Json json) => PddGoods(
@@ -190,10 +291,60 @@ class PddGoods {
     number: json.integer('goods_number', 1),
     thumbUrl: json.str('thumb_url'),
     spec: json.str('spec'),
+    goodsId: json.str('goods_id'),
   );
 
-  final String name, thumbUrl, spec;
+  final String name, thumbUrl, spec, goodsId;
   final int priceCents, number;
 
   String get priceText => PddApi._fmt(priceCents);
+}
+
+/// 订单详情（从 order.html SSR 提取）。
+class PddOrderDetail {
+  const PddOrderDetail({
+    required this.orderSn,
+    required this.address,
+    required this.shippingName,
+    required this.trackingNumber,
+    required this.orderTime,
+    required this.shipTime,
+    required this.payMethod,
+    this.raw,
+  });
+
+  final String orderSn, address, shippingName, trackingNumber;
+  final String orderTime, shipTime, payMethod;
+  final Map<String, dynamic>? raw;
+}
+
+/// 物流轨迹节点。
+class PddTraceNode {
+  const PddTraceNode({
+    required this.info,
+    required this.time,
+    required this.status,
+    required this.statusTag,
+  });
+
+  factory PddTraceNode.fromJson(Json json) => PddTraceNode(
+        info: json.str('info'),
+        time: json.str('displayTime').ifEmpty(json.str('time')),
+        status: json.str('status'),
+        statusTag: json.str('statusTag'),
+      );
+
+  final String info, time, status, statusTag;
+}
+
+/// 物流轨迹结果。
+class PddOrderTrack {
+  const PddOrderTrack({
+    required this.shippingName,
+    required this.trackingNumber,
+    required this.traces,
+  });
+
+  final String shippingName, trackingNumber;
+  final List<PddTraceNode> traces;
 }

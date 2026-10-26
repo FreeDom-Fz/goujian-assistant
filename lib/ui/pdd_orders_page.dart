@@ -7,6 +7,7 @@ import '../data/pdd_api.dart';
 import '../domain/auth.dart';
 import '../domain/models.dart';
 import 'common.dart';
+import 'pdd_order_detail_page.dart';
 
 /// 拼多多订单页（数据化列表，#6）。
 ///
@@ -331,9 +332,20 @@ class _PddOrdersPageState extends State<PddOrdersPage> {
             );
           }
           final order = _visible[index];
-          return _OrderCard(
-            order: order,
-            onExpress: () => _openExpress(order),
+          return InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => PddOrderDetailPage(services: widget.services, order: order),
+                ),
+              );
+            },
+            borderRadius: BorderRadius.circular(12),
+            child: _OrderCard(
+              order: order,
+              onExpress: () => _openExpress(order),
+            ),
           );
         },
       ),
