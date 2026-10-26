@@ -52,12 +52,9 @@ class _PddOrdersPageState extends State<PddOrdersPage> {
       case 'DEPARTURE':
         return _ReceiveGroup.transporting;
     }
-    if (code.startsWith('ARRIVAL') || code.startsWith('DEPARTURE')) {
-      return _ReceiveGroup.transporting;
-    }
-    if (code.startsWith('IN_CABINET') || code.startsWith('OUT_CABINET')) {
-      return _ReceiveGroup.pickup;
-    }
+    if (code.startsWith('ARRIVAL')) return _ReceiveGroup.transporting;
+    if (code.startsWith('IN_CABINET')) return _ReceiveGroup.pickup;
+    if (code.startsWith('OUT_CABINET')) return _ReceiveGroup.signed;
     if (code.startsWith('SEND')) return _ReceiveGroup.delivering;
     // 兜底：按关键词
     final prompt = order.statusPrompt;
@@ -433,12 +430,12 @@ class _OrderCard extends StatelessWidget {
   String get _statusLabel {
     final code = logisticsStatus ?? '';
     if (code == 'SIGN') return '已签收';
-    if (code == 'DEPARTURE' || code.startsWith('DEPARTURE') || code.startsWith('ARRIVAL')) {
-      return '运输中';
-    }
+    if (code.startsWith('DEPARTURE')) return '运输中';
+    if (code.startsWith('ARRIVAL')) return '已到件待派送';
     if (code == 'GOT') return '待揽收';
     if (code.startsWith('SEND')) return '派送中';
-    if (code.startsWith('IN_CABINET') || code.startsWith('OUT_CABINET')) return '待取件';
+    if (code.startsWith('IN_CABINET')) return '已入柜待取件';
+    if (code.startsWith('OUT_CABINET')) return '已取件';
     // 非待收货类订单（待付款/拼团中/已评价等）直接用原 statusPrompt
     return order.statusPrompt;
   }
