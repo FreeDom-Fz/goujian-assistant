@@ -56,12 +56,9 @@ class _MinePageState extends State<MinePage> {
 
     return SafeArea(
       top: false,
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 520),
-          child: ListView(
-            padding: const EdgeInsets.all(20),
-            children: [
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
+        children: [
               const SizedBox(height: 24),
               // 应用信息：图标 + 名称 + 版本号（参考文析助手"我的"页顶部布局）
               Row(
@@ -180,8 +177,6 @@ class _MinePageState extends State<MinePage> {
               ),
             ],
           ),
-        ),
-      ),
     );
   }
 }
