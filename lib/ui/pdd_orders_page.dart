@@ -33,11 +33,33 @@ class _PddOrdersPageState extends State<PddOrdersPage> {
   PddOrderType _type = PddOrderType.all;
   _ReceiveGroup _subGroup = _ReceiveGroup.all;
 
-  /// "待收货"二级细分（App 端为本地过滤，2026-10-24 第二轮抓包确认：
-  /// 网页版 unreceived 数据 = App"待收货"全部订单；"已签收"订单
-  /// order_status_prompt 以"已签收"开头。待取件/派件中/运输中当前账号
-  /// 无订单，按关键词近似分组，规则待有对应状态订单后补验）。
-  static _ReceiveGroup _classifyReceived(PddOrder order) {
+  /// order_sn → 物流状态码（express/track/status）。仅 unreceived 时填充。
+  final Map<String, String> _logisticsStatus = {};
+
+  /// "待收货"二级细分分组。优先用物流状态码（express/track/status，实测
+  /// SIGN/DEPARTURE/GOT 可靠），状态码缺失时按 order_status_prompt 关键词兜底。
+  /// 状态码字典见《订单细分与详情接口说明.txt》第七节。
+  _ReceiveGroup _classifyReceived(PddOrder order) {
+    final code = _logisticsStatus[order.orderSn] ?? '';
+    switch (code) {
+      case 'SIGN':
+        return _ReceiveGroup.signed;
+      case 'SEND':
+        return _ReceiveGroup.delivering;
+      case 'IN_CABINET':
+        return _ReceiveGroup.pickup;
+      // DEPARTURE_xxx / ARRIVAL_xxx 都是运输中（精简码 DEPARTURE）
+      case 'DEPARTURE':
+        return _ReceiveGroup.transporting;
+    }
+    if (code.startsWith('ARRIVAL') || code.startsWith('DEPARTURE')) {
+      return _ReceiveGroup.transporting;
+    }
+    if (code.startsWith('IN_CABINET') || code.startsWith('OUT_CABINET')) {
+      return _ReceiveGroup.pickup;
+    }
+    if (code.startsWith('SEND')) return _ReceiveGroup.delivering;
+    // 兜底：按关键词
     final prompt = order.statusPrompt;
     if (prompt.contains('已签收')) return _ReceiveGroup.signed;
     if (prompt.contains('取件')) return _ReceiveGroup.pickup;
@@ -84,6 +106,26 @@ class _PddOrdersPageState extends State<PddOrdersPage> {
 
   Credential? get _credential => widget.services.vault.credential(_platform);
 
+  /// 批量拉取 unreceived 订单的物流状态码，用于细分分组。
+  /// 接口失败不影响主列表，静默跳过（关键词兜底仍可用）。
+  Future<void> _fetchLogisticsStatus() async {
+    final credential = _credential;
+    if (credential == null) return;
+    final sns = [
+      for (final o in _orders)
+        if (!_logisticsStatus.containsKey(o.orderSn)) o.orderSn,
+    ];
+    if (sns.isEmpty) return;
+    try {
+      final map = await _api.trackStatus(credential, sns);
+      if (mounted) {
+        setState(() => _logisticsStatus.addAll(map));
+      }
+    } catch (_) {
+      // 静默失败，关键词兜底
+    }
+  }
+
   void _onScroll() {
     if (_scroll.position.extentAfter < 400) _loadMore();
   }
@@ -119,6 +161,10 @@ class _PddOrdersPageState extends State<PddOrdersPage> {
           _loading = false;
         });
       }
+      // unreceived 类型批量查物流状态码，用于精确细分分组
+      if (target == PddOrderType.unreceived) {
+        await _fetchLogisticsStatus();
+      }
     } catch (error) {
       if (mounted) {
         setState(() {
@@ -146,6 +192,9 @@ class _PddOrdersPageState extends State<PddOrdersPage> {
           _nextOffset = result.nextOffset;
           _loadingMore = false;
         });
+      }
+      if (_type == PddOrderType.unreceived) {
+        await _fetchLogisticsStatus();
       }
     } catch (error) {
       if (mounted) {

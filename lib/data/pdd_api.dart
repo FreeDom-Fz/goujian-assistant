@@ -245,6 +245,39 @@ class PddApi {
       traces: traces,
     );
   }
+
+  /// 批量查询订单物流状态码（express/track/status）。
+  /// 返回 {order_sn: status}，status 取值：SIGN/DEPARTURE/GOT/SEND/IN_CABINET 等。
+  Future<Map<String, String>> trackStatus(
+    Credential credential,
+    List<String> orderSns,
+  ) async {
+    if (orderSns.isEmpty) return {};
+    final cookie = credential.primary;
+    final pdduid = LoginCredentials.cookiePairs(cookie)['pdd_user_id'] ?? '';
+    final result = await http.postJsonRead(
+      '$base/proxy/api/api/express/track/status?pdduid=$pdduid',
+      {
+        'order_sn_list': [
+          for (final sn in orderSns) {'order_sn': sn},
+        ],
+      },
+      {
+        'User-Agent': userAgent,
+        'Referer': _referer,
+        'Origin': base,
+        'Content-Type': 'application/json;charset=UTF-8',
+        'Cookie': cookie,
+      },
+    );
+    if (!result.successful) return {};
+    final json = result.json;
+    final out = <String, String>{};
+    for (final item in json.list('result_list')) {
+      out[item.str('order_sn')] = item.str('status');
+    }
+    return out;
+  }
 }
 
 /// 订单列表分页结果。
