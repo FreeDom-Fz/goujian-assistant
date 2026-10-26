@@ -189,21 +189,46 @@ class PddApi {
     require(result.successful, '物流轨迹 HTTP ${result.status}');
     final html = result.body;
 
-    // window.rawData 后面是一个大 JSON，一直到 </script> 结束；用贪婪匹配
-    // 到 </script>，避免被 JSON 内部的 }; 提前截断。
-    final rawMatch = RegExp(
-      r'window\.rawData\s*=\s*(\{.*\})\s*;?\s*</script>',
-      dotAll: true,
-    ).firstMatch(html);
-    if (rawMatch == null) {
-      // 兜底：直接取 window.rawData= 到行尾
-      final m2 = RegExp(r'window\.rawData\s*=\s*(\{.+)').firstMatch(html);
-      if (m2 == null) throw AppException('未找到物流轨迹数据');
-      throw AppException('物流轨迹数据格式异常');
+    // window.rawData = { ... };  用括号深度匹配提取完整 JSON，
+    // 避免正则被 JSON 内部的 }; 或后续脚本截断/吞入多余字符。
+    final marker = 'window.rawData';
+    final start = html.indexOf(marker);
+    if (start < 0) throw AppException('未找到 window.rawData');
+    final braceStart = html.indexOf('{', start);
+    if (braceStart < 0) throw AppException('rawData 起始位置异常');
+    var depth = 0;
+    var inStr = false;
+    var escaped = false;
+    var end = -1;
+    for (var i = braceStart; i < html.length; i++) {
+      final c = html[i];
+      if (inStr) {
+        if (escaped) {
+          escaped = false;
+        } else if (c == '\\') {
+          escaped = true;
+        } else if (c == '"') {
+          inStr = false;
+        }
+        continue;
+      }
+      if (c == '"') {
+        inStr = true;
+      } else if (c == '{') {
+        depth++;
+      } else if (c == '}') {
+        depth--;
+        if (depth == 0) {
+          end = i;
+          break;
+        }
+      }
     }
+    if (end < 0) throw AppException('rawData 括号不匹配');
+    final jsonStr = html.substring(braceStart, end + 1);
     Map<String, dynamic> raw;
     try {
-      raw = jsonDecode(rawMatch.group(1)!) as Map<String, dynamic>;
+      raw = jsonDecode(jsonStr) as Map<String, dynamic>;
     } catch (e) {
       throw AppException('轨迹 JSON 解析失败: $e');
     }
