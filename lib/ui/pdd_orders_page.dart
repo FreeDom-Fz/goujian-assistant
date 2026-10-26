@@ -159,10 +159,9 @@ class _PddOrdersPageState extends State<PddOrdersPage> {
           _loading = false;
         });
       }
-      // unreceived 类型批量查物流状态码，用于精确细分分组
-      if (target == PddOrderType.unreceived) {
-        await _fetchLogisticsStatus();
-      }
+      // 所有类型加载完都批量查物流状态码，让"全部"标签下的待收货订单
+      // 也显示细分标签（运输中/已签收）而不是笼统的"待收货"。
+      await _fetchLogisticsStatus();
     } catch (error) {
       if (mounted) {
         setState(() {
