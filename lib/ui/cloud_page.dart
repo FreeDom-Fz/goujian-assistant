@@ -1,12 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
+import 'package:flutter/services.dart';
 import '../app_services.dart';
 import '../data/edge_login.dart';
+import '../data/pdd_api.dart';
 import '../domain/auth.dart';
 import '../domain/cloud_list_preferences.dart';
 import '../domain/models.dart';
 import 'common.dart';
+import 'pdd_accounts_page.dart';
 import 'pdd_orders_page.dart';
 
 /// 站点列表。当前为拼多多单站点；后续站点接入时在此追加。
@@ -117,6 +120,124 @@ class _CloudPageState extends State<CloudPage> {
     if (mounted) setState(() {});
   }
 
+  /// 复制当前账号 Cookie 到剪贴板。
+  Future<void> _copyCookie() async {
+    final credential = widget.services.vault.credential(_platform);
+    final raw = credential?.primary ?? '';
+    if (raw.isEmpty) {
+      if (mounted) message(context, '当前未登录，没有可复制的 Cookie');
+      return;
+    }
+    await Clipboard.setData(ClipboardData(text: raw));
+    if (mounted) message(context, 'Cookie 已复制到剪贴板');
+  }
+
+  /// 刷新登录状态：拉一次订单列表验证 Cookie 是否有效。
+  Future<void> _refreshStatus() async {
+    final credential = widget.services.vault.credential(_platform);
+    if (credential == null || !LoginCredentials.stored(_platform, credential)) {
+      if (mounted) message(context, '当前未登录');
+      return;
+    }
+    if (mounted) message(context, '正在验证登录状态…');
+    try {
+      final api = PddApi(widget.services.http);
+      await api.orders(credential, type: PddOrderType.all);
+      if (mounted) message(context, '登录状态正常');
+    } catch (error) {
+      if (mounted) message(context, '登录已失效，请重新登录');
+    }
+  }
+
+  /// 点卡片：未登录直接网页登录；已登录直接打开订单页。
+  void _onCardTap() {
+    final credential = widget.services.vault.credential(_platform);
+    final loggedIn = LoginCredentials.stored(_platform, credential);
+    if (loggedIn) {
+      Navigator.push<void>(
+        context,
+        MaterialPageRoute(builder: (_) => PddOrdersPage(widget.services)),
+      );
+    } else {
+      _webLoginEdge();
+    }
+  }
+
+  /// 右侧"⋮"弹出操作菜单（BottomSheet）。
+  void _showAccountMenu() {
+    showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const ListTile(
+              leading: PlatformBadge(text: '拼', size: 36),
+              title: Text('拼多多', style: TextStyle(fontWeight: FontWeight.w600)),
+            ),
+            const Divider(height: 1),
+            ListTile(
+              leading: const Icon(CupertinoIcons.refresh),
+              title: const Text('刷新登录状态'),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _refreshStatus();
+              },
+            ),
+            ListTile(
+              leading: const Icon(CupertinoIcons.person_crop_circle),
+              title: const Text('重新登录当前账号'),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _webLoginEdge();
+              },
+            ),
+            ListTile(
+              leading: const Icon(CupertinoIcons.group),
+              title: const Text('多账号管理'),
+              onTap: () async {
+                Navigator.pop(sheetContext);
+                await Navigator.push<void>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => PddAccountsPage(widget.services),
+                  ),
+                );
+                if (mounted) setState(() {});
+              },
+            ),
+            ListTile(
+              leading: const Icon(CupertinoIcons.doc_text),
+              title: const Text('手动填写登录信息'),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _manualLogin();
+              },
+            ),
+            ListTile(
+              leading: const Icon(CupertinoIcons.doc_on_doc),
+              title: const Text('复制 Cookie'),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _copyCookie();
+              },
+            ),
+            ListTile(
+              leading: const Icon(CupertinoIcons.square_arrow_right, color: Color(0xFFE53935)),
+              title: const Text('退出账号', style: TextStyle(color: Color(0xFFE53935))),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _logout();
+              },
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
   /// 网页登录：拉起系统 Edge（CDP 接管），登录后自动读取 Cookie。
   ///
   /// 应用内 WebView2 加载拼多多登录页恒失败（code 9），系统 Edge 正常，
@@ -170,7 +291,10 @@ class _CloudPageState extends State<CloudPage> {
               Card(
                 elevation: 0,
                 margin: const EdgeInsets.only(bottom: 8),
-                child: Padding(
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
+                  onTap: _onCardTap,
+                  child: Padding(
                   padding: const EdgeInsets.all(14),
                   child: Row(
                     children: [
@@ -190,8 +314,8 @@ class _CloudPageState extends State<CloudPage> {
                             const SizedBox(height: 2),
                             Text(
                               loggedIn
-                                  ? '已登录，可查看订单与物流'
-                                  : '登录后查看订单与物流',
+                                  ? '已登录，点击卡片查看物流'
+                                  : '未登录，点击卡片登录',
                               style: TextStyle(
                                 fontSize: 12.5,
                                 color: secondary(context),
@@ -224,51 +348,21 @@ class _CloudPageState extends State<CloudPage> {
                           ),
                         ),
                       ),
-                      if (loggedIn)
-                        IconButton(
-                          tooltip: '退出登录',
-                          visualDensity: VisualDensity.compact,
-                          onPressed: _logout,
-                          icon: const Icon(
-                            CupertinoIcons.delete_solid,
-                            size: 15,
-                          ),
+                      IconButton(
+                        tooltip: '账号操作',
+                        visualDensity: VisualDensity.compact,
+                        onPressed: _showAccountMenu,
+                        icon: const Icon(
+                          CupertinoIcons.ellipsis,
+                          size: 18,
                         ),
+                      ),
                     ],
+                  ),
                   ),
                 ),
               ),
-              if (loggedIn)
-                FilledButton.icon(
-                  onPressed: () => Navigator.push<void>(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => PddOrdersPage(widget.services),
-                    ),
-                  ),
-                  icon: const Icon(CupertinoIcons.cart),
-                  label: const Text('打开订单页'),
-                )
-              else ...[
-                FilledButton.icon(
-                  onPressed: _manualLogin,
-                  icon: const Icon(CupertinoIcons.doc_text),
-                  label: const Text('手动粘贴 Cookie 登录'),
-                ),
-                const SizedBox(height: 8),
-                OutlinedButton.icon(
-                  onPressed: _loggingIn ? null : _webLoginEdge,
-                  icon: _loggingIn
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Icon(CupertinoIcons.person_crop_circle),
-                  label: Text(_loggingIn ? '登录中…' : '网页登录'),
-                ),
-              ],
-              const SizedBox(height: 12),
+              const SizedBox(height: 4),
               OutlinedButton.icon(
                 onPressed: () => Navigator.push<void>(
                   context,
