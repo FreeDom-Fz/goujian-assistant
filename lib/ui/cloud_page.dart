@@ -359,17 +359,6 @@ class _CloudPageState extends State<CloudPage> {
                   ),
                 ),
               ),
-              const SizedBox(height: 4),
-              OutlinedButton.icon(
-                onPressed: () => Navigator.push<void>(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => CloudListSettingsPage(widget.services),
-                  ),
-                ),
-                icon: const Icon(CupertinoIcons.slider_horizontal_3),
-                label: const Text('站点排序与隐藏'),
-              ),
             ],
           ),
         ),
