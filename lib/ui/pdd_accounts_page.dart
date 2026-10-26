@@ -6,6 +6,7 @@ import '../data/edge_login.dart';
 import '../data/state_store.dart' show CloudAccountProfile;
 import '../domain/auth.dart';
 import '../domain/models.dart';
+import 'app_popup_menu.dart';
 import 'cloud_page.dart' show PlatformBadge;
 import 'common.dart';
 
@@ -306,41 +307,30 @@ class _PddAccountsPageState extends State<PddAccountsPage> {
                                   profile.active ? '当前使用' : '点击切换到此账号',
                                   style: TextStyle(fontSize: 12, color: secondary(context)),
                                 ),
-                                trailing: PopupMenuButton<String>(
-                                  icon: const Icon(CupertinoIcons.ellipsis, size: 18),
+                                trailing: AppPopupMenuButton<String>(
+                                  tooltip: '账号操作',
+                                  icon: CupertinoIcons.ellipsis,
                                   onSelected: (action) => _onAccountAction(profile, action),
-                                  itemBuilder: (context) => [
-                                    const PopupMenuItem(
+                                  actions: const [
+                                    AppMenuAction(
                                       value: 'copy',
-                                      child: Row(children: [
-                                        Icon(CupertinoIcons.doc_on_doc, size: 18),
-                                        SizedBox(width: 12),
-                                        Text('复制 Cookie', style: TextStyle(fontSize: 13)),
-                                      ]),
+                                      label: '复制 Cookie',
+                                      icon: CupertinoIcons.doc_on_doc,
                                     ),
-                                    const PopupMenuItem(
+                                    AppMenuAction(
                                       value: 'rename',
-                                      child: Row(children: [
-                                        Icon(CupertinoIcons.pencil, size: 18),
-                                        SizedBox(width: 12),
-                                        Text('自定义名称', style: TextStyle(fontSize: 13)),
-                                      ]),
+                                      label: '自定义名称',
+                                      icon: CupertinoIcons.pencil,
                                     ),
-                                    const PopupMenuItem(
+                                    AppMenuAction(
                                       value: 'relogin',
-                                      child: Row(children: [
-                                        Icon(CupertinoIcons.refresh, size: 18),
-                                        SizedBox(width: 12),
-                                        Text('重新登录', style: TextStyle(fontSize: 13)),
-                                      ]),
+                                      label: '重新登录',
+                                      icon: CupertinoIcons.refresh,
                                     ),
-                                    const PopupMenuItem(
+                                    AppMenuAction(
                                       value: 'remove',
-                                      child: Row(children: [
-                                        Icon(CupertinoIcons.trash, size: 18, color: Color(0xFFE53935)),
-                                        SizedBox(width: 12),
-                                        Text('移除账号', style: TextStyle(fontSize: 13, color: Color(0xFFE53935))),
-                                      ]),
+                                      label: '移除账号',
+                                      icon: CupertinoIcons.trash,
                                     ),
                                   ],
                                 ),
