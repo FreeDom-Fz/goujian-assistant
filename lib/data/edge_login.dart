@@ -93,7 +93,7 @@ class EdgeLogin {
       throw const AppException('Edge 调试端口未就绪，请确认 Edge 可正常启动');
     }
     _ws = await WebSocket.connect(wsUrl);
-    _ws!.listen(_onMessage, onError: (_) {}, onDone: () {});
+    _ws!.listen(_onMessage, onError: (_) {}, onDone: () => _exited = true);
   }
 
   Future<String?> _discoverPageTarget() async {
@@ -138,7 +138,7 @@ class EdgeLogin {
     ws.add(jsonEncode({'id': id, 'method': method, 'params': params ?? {}}));
     try {
       final result = await completer.future.timeout(
-        const Duration(seconds: 20),
+        const Duration(seconds: 5),
       );
       if (result.containsKey('error')) {
         throw AppException('CDP 调用失败：${result['error']}');
@@ -188,7 +188,8 @@ class EdgeLogin {
           return cookies.map((c) => '${c.str('name')}=${c.str('value')}').join('; ');
         }
       } catch (_) {
-        // CDP 偶发失败可重试，不中断等待。
+        // CDP 连接已断（用户关闭 Edge）→ 立即结束。
+        if (_exited) return null;
       }
       await Future<void>.delayed(_pollInterval);
     }
