@@ -163,79 +163,27 @@ class _CloudPageState extends State<CloudPage> {
     }
   }
 
-  /// 右侧"⋮"弹出操作菜单（BottomSheet）。
-  void _showAccountMenu() {
-    showModalBottomSheet(
-      context: context,
-      showDragHandle: true,
-      builder: (sheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const ListTile(
-              leading: PlatformBadge(text: '拼', size: 36),
-              title: Text('拼多多', style: TextStyle(fontWeight: FontWeight.w600)),
-            ),
-            const Divider(height: 1),
-            ListTile(
-              leading: const Icon(CupertinoIcons.refresh),
-              title: const Text('刷新登录状态'),
-              onTap: () {
-                Navigator.pop(sheetContext);
-                _refreshStatus();
-              },
-            ),
-            ListTile(
-              leading: const Icon(CupertinoIcons.person_crop_circle),
-              title: const Text('重新登录当前账号'),
-              onTap: () {
-                Navigator.pop(sheetContext);
-                _webLoginEdge();
-              },
-            ),
-            ListTile(
-              leading: const Icon(CupertinoIcons.group),
-              title: const Text('多账号管理'),
-              onTap: () async {
-                Navigator.pop(sheetContext);
-                await Navigator.push<void>(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => PddAccountsPage(widget.services),
-                  ),
-                );
-                if (mounted) setState(() {});
-              },
-            ),
-            ListTile(
-              leading: const Icon(CupertinoIcons.doc_text),
-              title: const Text('手动填写登录信息'),
-              onTap: () {
-                Navigator.pop(sheetContext);
-                _manualLogin();
-              },
-            ),
-            ListTile(
-              leading: const Icon(CupertinoIcons.doc_on_doc),
-              title: const Text('复制 Cookie'),
-              onTap: () {
-                Navigator.pop(sheetContext);
-                _copyCookie();
-              },
-            ),
-            ListTile(
-              leading: const Icon(CupertinoIcons.square_arrow_right, color: Color(0xFFE53935)),
-              title: const Text('退出账号', style: TextStyle(color: Color(0xFFE53935))),
-              onTap: () {
-                Navigator.pop(sheetContext);
-                _logout();
-              },
-            ),
-            const SizedBox(height: 8),
-          ],
-        ),
-      ),
-    );
+  /// 右侧"⋮"菜单选项分发。
+  void _onMenuSelected(String value) {
+    switch (value) {
+      case 'refresh':
+        _refreshStatus();
+      case 'relogin':
+        _webLoginEdge();
+      case 'accounts':
+        Navigator.push<void>(
+          context,
+          MaterialPageRoute(builder: (_) => PddAccountsPage(widget.services)),
+        ).then((_) {
+          if (mounted) setState(() {});
+        });
+      case 'manual':
+        _manualLogin();
+      case 'copy':
+        _copyCookie();
+      case 'logout':
+        _logout();
+    }
   }
 
   /// 网页登录：拉起系统 Edge（CDP 接管），登录后自动读取 Cookie。
@@ -348,14 +296,60 @@ class _CloudPageState extends State<CloudPage> {
                           ),
                         ),
                       ),
-                      IconButton(
+                      PopupMenuButton<String>(
                         tooltip: '账号操作',
-                        visualDensity: VisualDensity.compact,
-                        onPressed: _showAccountMenu,
-                        icon: const Icon(
-                          CupertinoIcons.ellipsis,
-                          size: 18,
-                        ),
+                        icon: const Icon(CupertinoIcons.ellipsis, size: 18),
+                        onSelected: _onMenuSelected,
+                        itemBuilder: (context) => [
+                          const PopupMenuItem(
+                            value: 'refresh',
+                            child: Row(children: [
+                              Icon(CupertinoIcons.refresh, size: 18),
+                              SizedBox(width: 12),
+                              Text('刷新登录状态', style: TextStyle(fontSize: 13)),
+                            ]),
+                          ),
+                          const PopupMenuItem(
+                            value: 'relogin',
+                            child: Row(children: [
+                              Icon(CupertinoIcons.person_crop_circle, size: 18),
+                              SizedBox(width: 12),
+                              Text('重新登录当前账号', style: TextStyle(fontSize: 13)),
+                            ]),
+                          ),
+                          const PopupMenuItem(
+                            value: 'accounts',
+                            child: Row(children: [
+                              Icon(CupertinoIcons.group, size: 18),
+                              SizedBox(width: 12),
+                              Text('多账号管理', style: TextStyle(fontSize: 13)),
+                            ]),
+                          ),
+                          const PopupMenuItem(
+                            value: 'manual',
+                            child: Row(children: [
+                              Icon(CupertinoIcons.doc_text, size: 18),
+                              SizedBox(width: 12),
+                              Text('手动填写登录信息', style: TextStyle(fontSize: 13)),
+                            ]),
+                          ),
+                          const PopupMenuItem(
+                            value: 'copy',
+                            child: Row(children: [
+                              Icon(CupertinoIcons.doc_on_doc, size: 18),
+                              SizedBox(width: 12),
+                              Text('复制 Cookie', style: TextStyle(fontSize: 13)),
+                            ]),
+                          ),
+                          const PopupMenuItem(
+                            value: 'logout',
+                            child: Row(children: [
+                              Icon(CupertinoIcons.square_arrow_right, size: 18, color: Color(0xFFE53935)),
+                              SizedBox(width: 12),
+                              Text('退出账号', style: TextStyle(fontSize: 13, color: Color(0xFFE53935))),
+                            ]),
+                          ),
+                        ],
                       ),
                     ],
                   ),

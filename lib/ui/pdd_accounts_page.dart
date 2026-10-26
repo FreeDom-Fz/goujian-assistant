@@ -129,87 +129,8 @@ class _PddAccountsPageState extends State<PddAccountsPage> {
     }
   }
 
-  /// "+ 添加账号"：弹两选项（手动 Cookie / 网页登录）。
-  Future<void> _addAccount() async {
-    final choice = await showModalBottomSheet<String>(
-      context: context,
-      showDragHandle: true,
-      builder: (sheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(20, 0, 20, 8),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text('添加账号', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(CupertinoIcons.doc_text),
-              title: const Text('手动输入 Cookie 登录'),
-              onTap: () => Navigator.pop(sheetContext, 'manual'),
-            ),
-            ListTile(
-              leading: const Icon(CupertinoIcons.person_crop_circle),
-              title: const Text('网页登录'),
-              onTap: () => Navigator.pop(sheetContext, 'web'),
-            ),
-            const SizedBox(height: 8),
-          ],
-        ),
-      ),
-    );
-    if (choice == null) return;
-    final accountId = await widget.services.vault.createAccount(_platform);
-    if (!mounted) return;
-    if (choice == 'manual') {
-      await _manualLoginTo(accountId);
-    } else {
-      await _webLoginTo(accountId);
-    }
-  }
-
-  /// 点账号右侧 ⋮：复制 Cookie / 自定义名称 / 重新登录 / 移除账号。
-  Future<void> _showAccountActions(CloudAccountProfile profile) async {
-    final action = await showModalBottomSheet<String>(
-      context: context,
-      showDragHandle: true,
-      builder: (sheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const PlatformBadge(text: '拼', size: 36),
-              title: Text(profile.name, style: const TextStyle(fontWeight: FontWeight.w600)),
-            ),
-            const Divider(height: 1),
-            ListTile(
-              leading: const Icon(CupertinoIcons.doc_on_doc),
-              title: const Text('复制 Cookie'),
-              onTap: () => Navigator.pop(sheetContext, 'copy'),
-            ),
-            ListTile(
-              leading: const Icon(CupertinoIcons.pencil),
-              title: const Text('自定义名称'),
-              onTap: () => Navigator.pop(sheetContext, 'rename'),
-            ),
-            ListTile(
-              leading: const Icon(CupertinoIcons.refresh),
-              title: const Text('重新登录'),
-              onTap: () => Navigator.pop(sheetContext, 'relogin'),
-            ),
-            ListTile(
-              leading: const Icon(CupertinoIcons.trash, color: Color(0xFFE53935)),
-              title: const Text('移除账号', style: TextStyle(color: Color(0xFFE53935))),
-              onTap: () => Navigator.pop(sheetContext, 'remove'),
-            ),
-            const SizedBox(height: 8),
-          ],
-        ),
-      ),
-    );
-    if (action == null || !mounted) return;
+  /// 点账号右侧 ⋮ 菜单选项分发。
+  Future<void> _onAccountAction(CloudAccountProfile profile, String action) async {
     switch (action) {
       case 'copy':
         final credential = widget.services.vault.credentialFor(_platform, profile.id);
@@ -309,7 +230,45 @@ class _PddAccountsPageState extends State<PddAccountsPage> {
                         child: Text('拼多多', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
                       ),
                       TextButton.icon(
-                        onPressed: _busy ? null : _addAccount,
+                        onPressed: _busy ? null : () async {
+                          final choice = await showModalBottomSheet<String>(
+                            context: context,
+                            showDragHandle: true,
+                            builder: (sheetContext) => SafeArea(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Padding(
+                                    padding: EdgeInsets.fromLTRB(20, 0, 20, 8),
+                                    child: Align(
+                                      alignment: Alignment.centerLeft,
+                                      child: Text('添加账号', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+                                    ),
+                                  ),
+                                  ListTile(
+                                    leading: const Icon(CupertinoIcons.doc_text),
+                                    title: const Text('手动输入 Cookie 登录'),
+                                    onTap: () => Navigator.pop(sheetContext, 'manual'),
+                                  ),
+                                  ListTile(
+                                    leading: const Icon(CupertinoIcons.person_crop_circle),
+                                    title: const Text('网页登录'),
+                                    onTap: () => Navigator.pop(sheetContext, 'web'),
+                                  ),
+                                  const SizedBox(height: 8),
+                                ],
+                              ),
+                            ),
+                          );
+                          if (choice == null || !mounted) return;
+                          final accountId = await widget.services.vault.createAccount(_platform);
+                          if (!mounted) return;
+                          if (choice == 'manual') {
+                            await _manualLoginTo(accountId);
+                          } else {
+                            await _webLoginTo(accountId);
+                          }
+                        },
                         icon: const Icon(CupertinoIcons.add, size: 18),
                         label: const Text('添加账号'),
                       ),
@@ -347,9 +306,43 @@ class _PddAccountsPageState extends State<PddAccountsPage> {
                                   profile.active ? '当前使用' : '点击切换到此账号',
                                   style: TextStyle(fontSize: 12, color: secondary(context)),
                                 ),
-                                trailing: IconButton(
+                                trailing: PopupMenuButton<String>(
                                   icon: const Icon(CupertinoIcons.ellipsis, size: 18),
-                                  onPressed: () => _showAccountActions(profile),
+                                  onSelected: (action) => _onAccountAction(profile, action),
+                                  itemBuilder: (context) => [
+                                    const PopupMenuItem(
+                                      value: 'copy',
+                                      child: Row(children: [
+                                        Icon(CupertinoIcons.doc_on_doc, size: 18),
+                                        SizedBox(width: 12),
+                                        Text('复制 Cookie', style: TextStyle(fontSize: 13)),
+                                      ]),
+                                    ),
+                                    const PopupMenuItem(
+                                      value: 'rename',
+                                      child: Row(children: [
+                                        Icon(CupertinoIcons.pencil, size: 18),
+                                        SizedBox(width: 12),
+                                        Text('自定义名称', style: TextStyle(fontSize: 13)),
+                                      ]),
+                                    ),
+                                    const PopupMenuItem(
+                                      value: 'relogin',
+                                      child: Row(children: [
+                                        Icon(CupertinoIcons.refresh, size: 18),
+                                        SizedBox(width: 12),
+                                        Text('重新登录', style: TextStyle(fontSize: 13)),
+                                      ]),
+                                    ),
+                                    const PopupMenuItem(
+                                      value: 'remove',
+                                      child: Row(children: [
+                                        Icon(CupertinoIcons.trash, size: 18, color: Color(0xFFE53935)),
+                                        SizedBox(width: 12),
+                                        Text('移除账号', style: TextStyle(fontSize: 13, color: Color(0xFFE53935))),
+                                      ]),
+                                    ),
+                                  ],
                                 ),
                                 onTap: () async {
                                   if (!profile.active) {
