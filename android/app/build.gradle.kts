@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.asterlink.app"
+    namespace = "com.goujian.assistant"
     compileSdk = 36
     ndkVersion = "28.2.13676358"
     compileOptions {
@@ -14,11 +14,16 @@ android {
     }
     kotlinOptions { jvmTarget = "17" }
     defaultConfig {
-        applicationId = "com.asterlink.app"
+        applicationId = "com.goujian.assistant"
         minSdk = flutter.minSdkVersion
         targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+    }
+    buildTypes {
+        release {
+            signingConfig = signingConfigs.getByName("debug")
+        }
     }
 }
 flutter { source = "../.." }

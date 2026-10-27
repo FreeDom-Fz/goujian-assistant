@@ -58,7 +58,7 @@ class StateStore extends ChangeNotifier {
     final backup = File('${file.path}.bak');
     final pending = File('${file.path}.tmp');
     localKey = testKey == null
-        ? (localKey ?? LocalStateKey(directory, storage))
+        ? (localKey ?? LocalStateKey(directory, storage, nativeAndroid: false))
         : null;
     final saved = await localKey?.read();
     final keys = testKey != null ? [testKey] : saved!.keys;
@@ -606,9 +606,10 @@ class Vault implements CredentialStore {
   @override
   Future<void> putCredential(
     CloudPlatform platform,
-    Credential credential,
-  ) async {
-    final owner = accountId(platform);
+    Credential credential, {
+    String? accountId,
+  }) async {
+    final owner = accountId ?? this.accountId(platform);
     await store.change((draft) {
       migrateDraft(draft);
       final id = owner ?? newId();

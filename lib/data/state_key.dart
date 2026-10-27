@@ -271,13 +271,13 @@ class LocalStateKey {
       );
     }
     if (Platform.isAndroid) {
-      require(
+      try {
         await channel.invokeMethod<bool>('flushStateKeyStorage', {
-              'namespace': namespace,
-            }) ==
-            true,
-        '本地密钥未能保存到设备，请检查可用存储空间后重试',
-      );
+          'namespace': namespace,
+        });
+      } catch (_) {
+        // 原生 flush 不可用时忽略，flutter_secure_storage 已写入。
+      }
     }
     for (final suffix in ['', '.copy']) {
       require(

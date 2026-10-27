@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:collection';
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
@@ -9,7 +11,7 @@ import '../domain/models.dart';
 import '../diagnostics/web_login_diagnostics.dart';
 import 'common.dart';
 import 'login_webview.dart';
-export 'login_webview.dart' show webSettings, desktopLoginViewportScript;
+export 'login_webview.dart' show webSettings, desktopLoginViewportScript, desktopLoginUserScript;
 
 /// 通用网页登录入口。站点链路接入（#6）后按目标站点构造
 /// [WebLoginTarget] 调用；账号创建/激活在此一并完成。
@@ -293,6 +295,7 @@ class _WebLoginPageState extends State<WebLoginPage>
         await widget.services.vault.putCredential(
           widget.target.platform,
           credential,
+          accountId: widget.accountId,
         );
         if (!mounted || manualOpen) return;
         completed = true;
@@ -391,8 +394,14 @@ class _WebLoginPageState extends State<WebLoginPage>
         ? URLRequest(url: WebUri(widget.target.url))
         : null,
     initialSettings: webSettings(
+      // 传空 UA，让 WebView 用原生 UA。
+      // 伪造的 Chrome/147 与 WebView 内核 TLS 指纹不一致，拼多多风控会直接断开连接。
       userAgent: widget.target.userAgent,
+      desktopMode: widget.target.desktopMode,
     ),
+    initialUserScripts: widget.target.desktopMode
+        ? UnmodifiableListView([desktopLoginUserScript()])
+        : UnmodifiableListView([]),
     onWebViewCreated: (web) {
       if (popup != null) {
         popup.controller = web;
@@ -414,7 +423,10 @@ class _WebLoginPageState extends State<WebLoginPage>
         error: description,
         stack: StackTrace.current,
       );
-      if (mounted) setState(() => error = '页面加载失败：$description');
+      // 只在主框架加载失败时才显示错误，子框架（跳转/API）失败不打扰用户
+      if (mounted && request.isForMainFrame == true) {
+        setState(() => error = '页面加载失败：$description');
+      }
     },
     onRenderProcessGone: (web, detail) => _rendererGone(web, detail),
     onTitleChanged: (web, title) {
@@ -491,6 +503,17 @@ class _WebLoginPageState extends State<WebLoginPage>
                       color: Theme.of(context).colorScheme.onErrorContainer,
                       fontSize: 13,
                     ),
+                  ),
+                ),
+              // 拼多多登录提醒：推荐扫码登录
+              if (widget.target.platform == CloudPlatform.pdd)
+                Container(
+                  width: double.infinity,
+                  color: Colors.amber.shade50,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: const Text(
+                    '推荐使用扫码登录。手机号码登录可能会导致应用在其他设备上退出账号。',
+                    style: TextStyle(fontSize: 12.5, color: Colors.brown),
                   ),
                 ),
               Padding(

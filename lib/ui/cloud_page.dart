@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
@@ -9,6 +10,7 @@ import '../domain/auth.dart';
 import '../domain/cloud_list_preferences.dart';
 import '../domain/models.dart';
 import 'common.dart';
+import 'login_page.dart';
 import 'pdd_accounts_page.dart';
 import 'pdd_orders_page.dart';
 
@@ -58,6 +60,15 @@ class _CloudPageState extends State<CloudPage> {
   static const _platform = CloudPlatform.pdd;
   bool _loggingIn = false;
   bool _sessionExpired = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // 进入页面时自动检测登录状态
+    if (widget.services.vault.credential(_platform) != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _refreshStatus());
+    }
+  }
 
   /// 手动粘贴 Cookie 登录（网页登录在部分环境被拼多多拦截时使用）。
   Future<void> _manualLogin() async {    final controller = TextEditingController();
@@ -251,6 +262,18 @@ class _CloudPageState extends State<CloudPage> {
   /// 因此登录交给真实 Edge 完成，应用通过 CDP 轮询会话字段并保存。
   Future<void> _webLoginEdge() async {
     if (_loggingIn) return;
+    if (!Platform.isWindows) {
+      // Android/其他平台：用应用内 WebView 登录
+      await openLogin(context, widget.services, pddLoginTarget);
+      if (mounted) {
+        setState(() {});
+        // 登录成功后自动检测登录状态
+        if (widget.services.vault.credential(_platform) != null) {
+          _refreshStatus();
+        }
+      }
+      return;
+    }
     setState(() => _loggingIn = true);
     final bridge = EdgeLogin();
     try {
@@ -273,8 +296,14 @@ class _CloudPageState extends State<CloudPage> {
         widget.services.vault.credential(_platform),
       );
       await widget.services.vault.putCredential(_platform, credential);
-      if (mounted) setState(() {});
-      if (mounted) message(context, '拼多多登录成功，登录信息已保存');
+      if (mounted) {
+        setState(() {});
+        message(context, '拼多多登录成功，登录信息已保存');
+        // 登录成功后自动检测登录状态
+        if (widget.services.vault.credential(_platform) != null) {
+          _refreshStatus();
+        }
+      }
     } catch (error) {
       if (mounted) message(context, errorText(error));
     } finally {

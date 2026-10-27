@@ -1,4 +1,4 @@
-package com.asterlink.app
+package com.goujian.assistant
 
 import io.flutter.embedding.android.FlutterActivity
 

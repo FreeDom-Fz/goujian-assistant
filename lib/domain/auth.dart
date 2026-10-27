@@ -209,7 +209,7 @@ class WebLoginTarget {
 final pddLoginTarget = WebLoginTarget(
   CloudPlatform.pdd,
   'https://mobile.yangkeduo.com/login.html',
-  ['yangkeduo.com', 'pinduoduo.com'],
+  ['https://yangkeduo.com', 'https://pinduoduo.com', 'https://mobile.yangkeduo.com'],
   userAgent: '',
 );
 

@@ -2,13 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../app_services.dart';
-import '../data/edge_login.dart';
 import '../data/state_store.dart' show CloudAccountProfile;
 import '../domain/auth.dart';
 import '../domain/models.dart';
 import 'app_popup_menu.dart';
 import 'cloud_page.dart' show PlatformBadge;
 import 'common.dart';
+import 'login_page.dart' show openLogin;
 
 /// 拼多多多账号管理页。
 ///
@@ -102,22 +102,12 @@ class _PddAccountsPageState extends State<PddAccountsPage> {
     }
   }
 
-  /// 网页登录（CDP 接管系统 Edge）到指定账号。
+  /// 网页登录（应用内 WebView）到指定账号。
   Future<void> _webLoginTo(String accountId) async {
     if (_busy) return;
     setState(() => _busy = true);
-    final bridge = EdgeLogin();
     try {
-      await bridge.start(pddLoginTarget.url);
-      if (mounted) {
-        message(context, '已在浏览器打开拼多多登录页，登录成功后会自动同步');
-      }
-      final cookie = await bridge.waitForPddCookies();
-      if (cookie == null || cookie.isEmpty) {
-        if (mounted) message(context, '等待登录超时，未获取到登录信息');
-        return;
-      }
-      await _commitCredential(accountId, cookie);
+      await openLogin(context, widget.services, pddLoginTarget, accountId: accountId);
       if (mounted) {
         setState(() {});
         message(context, '登录成功，已切换为当前账号');
@@ -125,7 +115,6 @@ class _PddAccountsPageState extends State<PddAccountsPage> {
     } catch (error) {
       if (mounted) message(context, errorText(error));
     } finally {
-      await bridge.close();
       if (mounted) setState(() => _busy = false);
     }
   }

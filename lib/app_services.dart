@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'core/json.dart';
 import 'diagnostics/app_log.dart';
 import 'data/backgrounds.dart';
@@ -56,13 +57,8 @@ class AppServices extends ChangeNotifier {
   static Future<AppServices> open() async {
     Directory data, cache;
     if (Platform.isAndroid) {
-      final paths = asJson(await nativeChannel.invokeMethod<Object?>('paths'));
-      require(
-        paths.str('data').isNotEmpty && paths.str('cache').isNotEmpty,
-        '无法读取应用存储路径',
-      );
-      data = Directory(paths.str('data'));
-      cache = Directory(paths.str('cache'));
+      data = await getApplicationSupportDirectory();
+      cache = await getTemporaryDirectory();
     } else {
       require(Platform.isWindows, '当前版本支持 Android 和 Windows');
       // 购件助手使用独立数据目录（不随文析助手的 getApplicationSupportDirectory

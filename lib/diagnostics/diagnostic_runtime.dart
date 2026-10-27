@@ -59,14 +59,10 @@ class DiagnosticRuntime with WidgetsBindingObserver {
     bool? enabled;
     try {
       if (Platform.isAndroid) {
-        final paths = asJson(
-          await const MethodChannel('com.asterlink.app/native')
-              .invokeMethod<Object?>('diagnosticPaths')
-              .timeout(const Duration(seconds: 5)),
+        directory = Directory(
+          p.join((await getApplicationSupportDirectory()).path, 'diagnostics'),
         );
-        require(paths.str('logs').isNotEmpty, '无法读取日志目录');
-        directory = Directory(paths.str('logs'));
-        enabled = paths.boolean('enabled', true);
+        enabled = true;
       } else {
         directory = Directory(
           p.join(
